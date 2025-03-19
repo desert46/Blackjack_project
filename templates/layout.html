@@ -6,8 +6,8 @@
     <title >My Site - {{title}}</title>
 </head>
 <body>
+    <nav>{% include "navigation.html"%}</nav>
     <header>{% include "header.html" %}</header>
-    <nav>NAV</nav>
     <main>{% block content %} {% endblock %}</main>
     <footer>(c)2025</footer>
 </body>
