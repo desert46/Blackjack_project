@@ -1,11 +1,14 @@
 body{
     background-color: #729652;
-    font-family: "Caveat", cursive;
-    font-optical-sizing: auto;
-    font-weight: 500;
-    font-style: normal;
-    
 }
+
+/* Navigation bar style start */
+.navigation_bar{
+    background-color: #729652;
+    width: 100%;
+}
+/* Navigation bar style end */
+
 /* Header style start */
 .hero_image{
     border-right: none;
@@ -13,21 +16,24 @@ body{
     background-image: url("../images/hero_image.PNG");
     background-size: 100%;
     margin: -8px;
-    height: 500px;
+    height: 400px;
+    background-repeat: no-repeat;
+}
+.hero_title{
+    color: red;
+    text-align: center;
+    font-size: 50px;
 }
 .hero_text{
-    color: red;
-
+    text-align: center;
 
 }
 /* Header Style end */
 
-/* navigation bar style start */
-.navigation_bar{
-    background-color: #729652;
-    width: 105%;
-    padding: 0.8%;
-    margin-top: -8px;
-    margin-left: -8px;
-    margin-right: -8px;
+/* Home page Style start */
+.home_text{
+    margin: 2.5% 15%;
+    display: grid;
 }
+
+
