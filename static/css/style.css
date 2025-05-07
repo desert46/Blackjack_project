@@ -1,39 +1,94 @@
 body{
-    background-color: #729652;
+    background-color: #085e0a;
+    font-family: "Roboto", sans-serif;
+    margin: 0;
+    padding: 0;
+}
+.colour_pallete{
+    color: #FFFFFF;
+    color: #ff3131;
+    color: #729652;
+    color: #338800;
+    color: #085e0a;
+    color: #000000;
 }
 
 /* Navigation bar style start */
-.navigation_bar{
-    background-color: #729652;
-    width: 100%;
+.navigation_bar {
+    background-color: #338800;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    margin-left: 0;
+    border-bottom: 5px solid white;
+} 
+.navigation_links a{
+    margin-right: 0;
+    padding: 15px 20px;
+    border-radius: 2px;
+    color: #FFFFFF;
+    font-weight: bold;
+    text-decoration: none;
+}
+.navigation_links a:hover{
+    background-color: #286907;
+}
+.signlog a {
+    margin-right: 0px;
+    background-color: #ff3131;
+    color:#FFFFFF;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-weight: bold;
+    text-decoration: none;
 }
 /* Navigation bar style end */
 
 /* Header style start */
 .hero_image{
-    border-right: none;
-    border-left: none;
     background-image: url("../images/hero_image.PNG");
-    background-size: 100%;
-    margin: -8px;
-    height: 400px;
     background-repeat: no-repeat;
+    background-size: 100%;
+    height: 36rem;
+    background-position: center;
+    border-bottom: 5px solid white;
+    text-align: center;
 }
 .hero_title{
-    color: red;
-    text-align: center;
-    font-size: 50px;
+    margin: 0;
+    font-size: 6rem;
+    color: #ff3131;
+    padding-top: 10rem;
 }
 .hero_text{
-    text-align: center;
+    color: #FFFFFF;
+    font-size: 2rem;
+}
+.signup_hero_button{
 
+    font-weight: bold;
+    background-color: #ff3131;
+    margin: 0 55rem;
+    border: white;
+    border: 3px solid white;
+    border-radius: 50px;
+}
+.signup_hero_button a{
+    color: #FFFFFF;
+    text-decoration: none;
 }
 /* Header Style end */
 
 /* Home page Style start */
 .home_text{
-    margin: 2.5% 15%;
+    align-items: center;
+    color: white;
+    gap: 12%;
+    margin: 0 15%;
     display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    padding: 1%;
 }
 
 

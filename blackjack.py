@@ -32,5 +32,15 @@ def login():
     return render_template("login.html", title="Login")
 
 
+@app.route('/signup')
+def signup():
+    return render_template("signup.html", title="Sign Up")
+
+
+@app.route('/settings')
+def settings():
+    return render_template("settings.html", title="Settings")
+
+
 if __name__ == "__main__":
     app.run(debug=True)  # make this turned to off when you submit
