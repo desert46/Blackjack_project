@@ -3,8 +3,22 @@ body{
     font-family: "Roboto", sans-serif;
     margin: 0;
     padding: 0;
+    margin-bottom: 100px;
 }
-.colour_pallete{
+footer{
+    background-color: #000000;
+    border-top: 5px solid white;
+    border-bottom: 5px solid white;
+    text-align: center;
+    color: white;
+    width: 100%;
+    position: fixed;
+    bottom: 0; 
+}
+.title{
+    margin: 1rem;
+}
+.colors{
     color: #FFFFFF;
     color: #ff3131;
     color: #729652;
@@ -64,9 +78,9 @@ body{
 .hero_text{
     color: #FFFFFF;
     font-size: 2rem;
+    font-weight: bold;
 }
 .signup_hero_button{
-
     font-weight: bold;
     background-color: #ff3131;
     margin: 0 55rem;
@@ -90,5 +104,9 @@ body{
     grid-template-columns: 1fr 1fr 1fr;
     padding: 1%;
 }
-
-
+/* Home page Style end */
+/* Signup Page Style start */
+form{
+    size: 50rem;
+}
+/* Signup Page Style end */

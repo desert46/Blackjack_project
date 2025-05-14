@@ -1,5 +1,6 @@
 '''Project Start 18/03/2025'''
 from flask import Flask, render_template
+import hashlib
 import sqlite3
 
 
