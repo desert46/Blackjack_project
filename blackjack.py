@@ -18,9 +18,9 @@ def play():
     return render_template("play.html", title="Play")
 
 
-@app.route('/stats')
+@app.route('/stats', methods=['POST', 'GET'])
 def stats():
-    return render_template("stats.html", title="Stats")
+    return render_template("stats.html", title="Stats", id=id)
 
 
 @app.route('/about')
@@ -28,8 +28,21 @@ def about():
     return render_template("about.html", title="About")
 
 
-@app.route('/login')
+@app.route('/login', methods=['POST', 'GET'])
 def login():
+    username = request.args.get('username')
+    password = request.args.get('password')
+    if username is not None:
+        print(username)
+        print(password)
+        db = sqlite3.connect(DATABASE)
+        cursor = db.cursor()
+        sql = f'''SELECT id, password FROM Player WHERE username={username}'''
+        print(sql)
+        cursor.execute(sql)
+        id = cursor.fetchone()
+        print(password)
+        print(id)
     return render_template("login.html", title="Login")
 
 
@@ -41,17 +54,17 @@ def signup():
         db = sqlite3.connect(DATABASE)
         cursor = db.cursor()
         sql = f'''
-        INSERT INTO player (username, password, xp, level, award_count, 
-        hands_played, wins, losses, pushes, money_wins, money_losses, hits, 
-        busts, stands, dealer_higher, dealer_busts, player_higher)
-        VALUES (?, ?, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-        ''' # sql query to create an account
+        INSERT INTO Player (username, password, xp, level, award_count,
+        hands_played, wins, losses, pushes, money_wins, money_losses, hits,
+        busts, stands, dealer_higher, dealer_busts, player_higher, money)
+        VALUES (?, ?, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10000)
+        '''  # sql query to create an account
         cursor.execute(sql, (username, password))
-        db.commit()   # commits so data is saved
+        db.commit()  # commits so data is saved
         db.close()
         return render_template("signup.html", title="Sign Up")
     return render_template("signup.html", title="Sign Up")
-    
+
 
 @app.route('/settings')
 def settings():

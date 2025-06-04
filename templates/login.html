@@ -4,5 +4,24 @@
     Login
 </h1>
 <p>test</p>
+<form method="get" action="/login">
+    <table>
+        <tr>
+            <td>Login here</td>
+        </tr>
+        <tr>
+            <td>Username</td>
+            <td><input type="text" name="username" maxlength="15" required></td>
+        </tr>
+        <tr>
+            <td>Password</td>
+            <td><input type="password" name="password" minlength="6"  maxlength="20" required></td>
+        </tr>
+        <tr>
+            <td><input type="submit" value="Login"></td>
+        </tr>
+    </table>
+</form>
 <hr>
+
 {% endblock %}
