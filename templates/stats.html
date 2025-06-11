@@ -3,6 +3,20 @@
 <h1 class="title">
     Player Stats
 </h1>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+<p>{{user_id}}</p>
+<p>{{username}}</p>
+<p>{{password}}</p>
 <p>test</p>
 <hr>
 {% endblock %}
