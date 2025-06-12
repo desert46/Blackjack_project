@@ -9,7 +9,7 @@ DATABASE = "blackjack.db"
 app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
-app.secret_key = 'your_secret_key'
+app.secret_key = 'LETS GO GAMBLING!!! AW DANG IT!!'
 Session(app)
 
 
@@ -74,24 +74,34 @@ def signup():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        if len(username) < 4:
+            flash("Your username must be at least 4 characters long")
+            return render_template("signup.html", title="Sign up")
+        if len(password) < 6 or len(password) > 15:
+            flash("Your password must at least 6 characters long")
+            return render_template("signup.html", title="Sign up")
+        elif password.isalpha() is True:
+            print(password.isalpha())
+            flash("Your username must have a number or special character")
+            return render_template("signup.html", title="Sign up")
         db = sqlite3.connect(DATABASE)
         cursor = db.cursor()
         # finding duplicate usernames
         sql = "SELECT * FROM Player WHERE username = ?"
         cursor.execute(sql, (username,))
         existing_user = cursor.fetchone()
-        if existing_user:  # checking for duplictae usernames
+        if existing_user:  # checking for duplicate usernames
             db.close()
             flash('This username is already taken, try again')
             return render_template("signup.html", title="Sign Up")
-        sql = f'''
+        sql = '''
         INSERT INTO Player (username, password)
-        VALUES (?, ?)
-        '''  # sql query to create an account
+        VALUES (?, ?)'''  # sql query to create an account
         cursor.execute(sql, (username, password))
         db.commit()  # commits so data is saved
         db.close()
-        return render_template("signup.html", title="Sign Up")
+        flash("You succesfully created an account, login again to play Blackjack")
+        return render_template("login.html", title="Login")
     return render_template("signup.html", title="Sign Up")
 
 
