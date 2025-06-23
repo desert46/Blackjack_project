@@ -17,6 +17,10 @@ footer{
 }
 .title{
     margin: 1rem;
+    font-size: 3rem;
+}
+.sub_heading{
+
 }
 .colors{
     color: #FFFFFF;
@@ -59,7 +63,7 @@ footer{
 }
 /* Navigation bar style end */
 
-/* Header style start */
+/* Hero Image style start */
 .hero_image{
     background-image: url("../images/hero_image.PNG");
     background-repeat: no-repeat;
@@ -92,7 +96,7 @@ footer{
     color: #FFFFFF;
     text-decoration: none;
 }
-/* Header Style end */
+/* Hero Image Style end */
 
 /* Home page Style start */
 .home_text{
@@ -105,8 +109,20 @@ footer{
     padding: 1%;
 }
 /* Home page Style end */
+
 /* Signup Page Style start */
-form{
-    size: 50rem;
-}
+
 /* Signup Page Style end */
+
+/* Login Page Style start */
+
+/* Login Page Style end */
+
+/* Player Stats Page Style start */
+.player_stats_login_msg{
+    text-align: center;
+}
+.player_stats_title{
+    text-align: center;
+}
+/* Player Stats Page Style end */

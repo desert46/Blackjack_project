@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
-<h1 class="title">
-    Player Stats
+<h1 class="title player_stats_title">
+    Search Stats
 </h1>
 
 {% with messages = get_flashed_messages() %}
@@ -14,9 +14,24 @@
   {% endif %}
 {% endwith %}
 
-<p>{{user_id}}</p>
-<p>{{username}}</p>
-<p>{{password}}</p>
-<p>test</p>
+<form method="post">
+  <table>
+      <tr>
+          <td>Search a Player ID here</td>
+      </tr>
+      <tr>
+          <td>ID</td>
+      </tr>
+      <tr>
+        <td><input type="text" name="searched_id" maxlength="15" required></td>
+      </tr>
+      <tr>
+          <td><input type="submit" value="Search"></td>
+      </tr>
+  </table>
+</form>
 <hr>
+{{searched_id}}
+
+{{logged_in}}
 {% endblock %}

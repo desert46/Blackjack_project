@@ -1,7 +1,6 @@
 '''Project Start 18/03/2025'''
 from flask import Flask, render_template, request, flash, session
 from flask_session import Session
-import hashlib
 import sqlite3
 DATABASE = "blackjack.db"
 
@@ -13,10 +12,34 @@ app.secret_key = 'LETS GO GAMBLING!!! AW DANG IT!!'
 Session(app)
 
 
+@app.context_processor
+def logged_in():
+    return dict(logged_in=session.get("logged_in"))
+
+
 @app.route('/')  # link with and without the /home will lead home
 @app.route('/home')
 def home():
-    return render_template("home.html", title="Home")
+    return render_template("home.html",
+                           title="Home",)
+
+
+@app.route('/dashboard')
+def dashboard():
+    if session.get("logged_in"):
+        login_msg = "You are logged in as"
+        user_id = session.get("user_id")
+        username = session.get("username")
+        password = session.get("password")
+        return render_template("dashboard.html",
+                               title="Dashboard.html",
+                               user_id=user_id,
+                               username=username,
+                               password=password,
+                               login_msg=login_msg)
+    else:
+        return render_template("not_logged_in.html",
+                               title="Dashboard",)
 
 
 @app.route('/play')
@@ -25,27 +48,34 @@ def play():
 
 
 @app.route('/stats', methods=['POST', 'GET'])
-def stats():
-    if session.get("logged_in"):
-        user_id = session.get("user_id")
-        username = session.get("username")
-        password = session.get("password")
-        flash("You are logged in")
-        return render_template("stats.html", title="Stats", user_id=user_id, username=username, password=password)
-    else:
-        flash("You are not logged in")
-        return render_template("stats.html", title="Stats")
+def stats_search():
+    if request.method == 'POST':
+        searched_id = request.form['searched_id']
+
+        db = sqlite3.connect(DATABASE)
+        cursor = db.cursor()
+        # finding duplicate usernames
+        sql = "SELECT * FROM Player WHERE id = ?"
+        cursor.execute(sql, (searched_id,))
+        data = cursor.fetchone()
+        db.close()
+
+        return render_template("stats.html", title="stats",
+                               searched_id=searched_id,
+                               data=data)
+    return render_template("stats.html", title="Stats",)
 
 
 @app.route('/about')
 def about():
-    return render_template("about.html", title="About")
+    return render_template("about.html",
+                           title="About")
 
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
-    username = request.args.get('username')
-    password = request.args.get('password')
+    username = request.form.get('username')
+    password = request.form.get('password')
     if username is not None:
         print(username)
         print(password)
@@ -54,8 +84,9 @@ def login():
         sql = "SELECT id, password FROM Player WHERE username = ?"
         cursor.execute(sql, (username,))
         results = cursor.fetchone()
-        if password == results[1]:  # gets password from the results and compares them
-            # gets id if passwords match
+        # gets password from the results and compares them
+        if password == results[1]:
+            # gets user_id if passwords match
             session['logged_in'] = True
             session['user_id'] = results[0]
             session['username'] = username
@@ -64,9 +95,11 @@ def login():
             print("valid")
             return render_template("play.html", title="Play")
         else:
-            flash("invalid")
-            return render_template("login.html", title="Login")
-    return render_template("login.html", title="Login")
+            flash("Your Username or Password is incorrect")
+            return render_template("login.html",
+                                   title="Login")
+    return render_template("login.html",
+                           title="Login")
 
 
 @app.route('/signup', methods=['POST', 'GET'])
@@ -74,13 +107,14 @@ def signup():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        if len(username) < 4:
-            flash("Your username must be at least 4 characters long")
+        # Checking the legnth is valid
+        if len(username) < 4 or len(username) > 15:
+            flash("Your username must be between 5~15 characters")
             return render_template("signup.html", title="Sign up")
         if len(password) < 6 or len(password) > 15:
-            flash("Your password must at least 6 characters long")
+            flash("Your password must be between 6~15 characters")
             return render_template("signup.html", title="Sign up")
-        elif password.isalpha() is True:
+        elif password.isalpha():
             print(password.isalpha())
             flash("Your username must have a number or special character")
             return render_template("signup.html", title="Sign up")
@@ -101,13 +135,23 @@ def signup():
         db.commit()  # commits so data is saved
         db.close()
         flash("You succesfully created an account, login again to play Blackjack")
-        return render_template("login.html", title="Login")
-    return render_template("signup.html", title="Sign Up")
+        return render_template("login.html",
+                               title="Login")
+    return render_template("signup.html",
+                           title="Sign Up")
 
 
 @app.route('/settings')
 def settings():
-    return render_template("settings.html", title="Settings")
+    return render_template("settings.html",
+                           title="Settings")
+
+
+@app.route('/log_out')
+def logout():
+    session.clear()
+    return render_template("log_out.html",
+                           title="Logged_Out")
 
 
 if __name__ == "__main__":

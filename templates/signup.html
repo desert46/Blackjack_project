@@ -13,7 +13,7 @@
   {% endif %}
 {% endwith %}
 <p>test</p>
-<form method="post">
+<form method="post" action="/signup">
     <table>
         <tr>
             <td>Sign Up here</td>
@@ -24,7 +24,7 @@
         </tr>
         <tr>
             <td>Password</td>
-            <td><input type="password" name="password" minlength="6"  maxlength="20" required></td>
+            <td><input type="password" name="password" minlength="6"  maxlength="15" required></td>
         </tr>
         <tr>
             <td><input type="submit" value="Sign up"></td>

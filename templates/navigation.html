@@ -5,8 +5,16 @@
         <a href="stats">Stats</a>
         <a href="about">About</a>
     </div>
+
+    {% if logged_in %}
+    <div class="signlog">
+        <a href="log_out">Log Out</a>
+    </div>
+    {% else %}
     <div class="signlog">
         <a href="login">Login</a>
         <a href="signup">Signup</a>
     </div>
+    {% endif %}
+    
 </div>
