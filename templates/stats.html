@@ -14,7 +14,7 @@
   {% endif %}
 {% endwith %}
 
-<form method="post">
+<form method="post" action="/stats">
   <table>
       <tr>
           <td>Search a Player ID here</td>
@@ -23,7 +23,7 @@
           <td>ID</td>
       </tr>
       <tr>
-        <td><input type="text" name="searched_id" maxlength="15" required></td>
+        <td><input type="text" name="searched_id" maxlength="5" required></td>
       </tr>
       <tr>
           <td><input type="submit" value="Search"></td>
@@ -31,7 +31,82 @@
   </table>
 </form>
 <hr>
-{{searched_id}}
 
-{{logged_in}}
+{% if data %}
+<table class="player_stats_table">
+  <tr>
+    <th>Player ID:</th>
+    <td>{{data['id']}}</td>
+  </tr>
+  <tr>
+    <th>Username:</th>
+    <td>{{data['username']}}</td>
+  </tr>
+  <tr>
+    <th>XP:</th>
+    <td>{{data['xp']}}</td>
+  </tr>
+  <tr>
+    <th>Level:</th>
+    <td>{{data['Level']}}</td>
+  </tr>
+  <tr>
+    <th>Award Count:</th>
+    <td>{{data['award_count']}}</td>
+  </tr>
+  <tr>
+    <th>Hands Played:</th>
+    <td>{{data['hands_played']}}</td>
+  </tr>
+  <tr>
+    <th>Hands Won:</th>
+    <td>{{data['wins']}}</td>
+  </tr>
+  <tr>
+    <th>Hands Lost:</th>
+    <td>{{data['losses']}}</td>
+  </tr>
+  <tr>
+    <th>Pushes:</th>
+    <td>{{data['pushes']}}</td>
+  </tr>
+  <tr>
+    <th>Money Won:</th>
+    <td>{{data['money_wins']}}</td>
+  </tr>
+  <tr>
+    <th>Money Lost:</th>
+    <td>{{data['money_losses']}}</td>
+  </tr>
+  <tr>
+    <th>Times Hits:</th>
+    <td>{{data['hits']}}</td>
+  </tr>
+  <tr>
+    <th>Times Busted:</th>
+    <td>{{data['busts']}}</td>
+  </tr>
+  <tr>
+    <th>Times Standed:</th>
+    <td>{{data['stands']}}</td>
+  </tr>
+  <tr>
+    <th>Dealer Wins:</th>
+    <td>{{data['dealer_higher']}}</td>
+  </tr>
+  <tr>
+    <th>Dealer Busts:</th>
+    <td>{{data['dealer_busts']}}</td>
+  </tr>
+  <tr>
+    <th>Player Wins:</th>
+    <td>{{data['player_higher']}}</td>
+  </tr>
+  <tr>
+    <th>Money:</th>
+    <td>{{data['money']}}</td>
+  </tr>
+</table>
+{% endif %}
+
 {% endblock %}

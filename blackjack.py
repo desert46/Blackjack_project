@@ -20,6 +20,8 @@ def logged_in():
 @app.route('/')  # link with and without the /home will lead home
 @app.route('/home')
 def home():
+    if session.get("logged_in"):
+        return render_template("dashboard.html")
     return render_template("home.html",
                            title="Home",)
 
@@ -30,12 +32,11 @@ def dashboard():
         login_msg = "You are logged in as"
         user_id = session.get("user_id")
         username = session.get("username")
-        password = session.get("password")
+        print(username)
         return render_template("dashboard.html",
-                               title="Dashboard.html",
+                               title="Dashboard",
                                user_id=user_id,
                                username=username,
-                               password=password,
                                login_msg=login_msg)
     else:
         return render_template("not_logged_in.html",
@@ -51,19 +52,20 @@ def play():
 def stats_search():
     if request.method == 'POST':
         searched_id = request.form['searched_id']
-
         db = sqlite3.connect(DATABASE)
+        db.row_factory = sqlite3.Row
         cursor = db.cursor()
         # finding duplicate usernames
         sql = "SELECT * FROM Player WHERE id = ?"
         cursor.execute(sql, (searched_id,))
         data = cursor.fetchone()
+        if data is None:
+            flash("No Player found with this ID")
         db.close()
-
-        return render_template("stats.html", title="stats",
+        return render_template("stats.html", title="Stats",
                                searched_id=searched_id,
-                               data=data)
-    return render_template("stats.html", title="Stats",)
+                               data=data,)
+    return render_template("stats.html", title="Stats")
 
 
 @app.route('/about')
@@ -77,8 +79,6 @@ def login():
     username = request.form.get('username')
     password = request.form.get('password')
     if username is not None:
-        print(username)
-        print(password)
         db = sqlite3.connect(DATABASE)
         cursor = db.cursor()
         sql = "SELECT id, password FROM Player WHERE username = ?"
@@ -91,8 +91,6 @@ def login():
             session['user_id'] = results[0]
             session['username'] = username
             session['password'] = results[1]
-            flash('You were successfully logged in')
-            print("valid")
             return render_template("play.html", title="Play")
         else:
             flash("Your Username or Password is incorrect")

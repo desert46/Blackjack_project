@@ -19,9 +19,6 @@ footer{
     margin: 1rem;
     font-size: 3rem;
 }
-.sub_heading{
-
-}
 .colors{
     color: #FFFFFF;
     color: #ff3131;
@@ -119,10 +116,14 @@ footer{
 /* Login Page Style end */
 
 /* Player Stats Page Style start */
-.player_stats_login_msg{
-    text-align: center;
-}
 .player_stats_title{
     text-align: center;
+}
+.player_stats_table th,
+.player_stats_table td {
+    border: 1px solid black;
+}
+.player_stats_table {
+    border-collapse: separate;
 }
 /* Player Stats Page Style end */
