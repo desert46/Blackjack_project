@@ -1,5 +1,5 @@
 '''Project Start 18/03/2025'''
-from flask import Flask, render_template, request, flash, session
+from flask import Flask, render_template, request, flash, session, redirect
 from flask_session import Session
 import sqlite3
 DATABASE = "blackjack.db"
@@ -21,14 +21,14 @@ def logged_in():
 @app.route('/home')
 def home():
     if session.get("logged_in"):
-        return render_template("dashboard.html")
+        return redirect('/dashboard')
     return render_template("home.html",
                            title="Home",)
 
 
 @app.route('/dashboard')
 def dashboard():
-    if session.get("logged_in"):
+    if logged_in:
         login_msg = "You are logged in as"
         user_id = session.get("user_id")
         username = session.get("username")
@@ -45,7 +45,11 @@ def dashboard():
 
 @app.route('/play')
 def play():
-    return render_template("play.html", title="Play")
+    if logged_in:
+        return render_template("play.html")
+    else:
+        return render_template("not_logged_in.html",
+                               title="Play")
 
 
 @app.route('/stats', methods=['POST', 'GET'])
@@ -76,6 +80,8 @@ def about():
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
+    if logged_in():
+        return redirect("/dashboard")
     username = request.form.get('username')
     password = request.form.get('password')
     if username is not None:
@@ -102,6 +108,8 @@ def login():
 
 @app.route('/signup', methods=['POST', 'GET'])
 def signup():
+    if logged_in():
+        return redirect("/dashboard")
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -114,7 +122,7 @@ def signup():
             return render_template("signup.html", title="Sign up")
         elif password.isalpha():
             print(password.isalpha())
-            flash("Your username must have a number or special character")
+            flash("Your password must have a number or special character")
             return render_template("signup.html", title="Sign up")
         db = sqlite3.connect(DATABASE)
         cursor = db.cursor()
@@ -149,7 +157,7 @@ def settings():
 def logout():
     session.clear()
     return render_template("log_out.html",
-                           title="Logged_Out")
+                           title="Logged Out")
 
 
 if __name__ == "__main__":
