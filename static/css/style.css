@@ -18,14 +18,20 @@ footer{
 .title{
     margin: 1rem;
     font-size: 3rem;
+    text-align: center;
 }
 .colors{
     color: #FFFFFF;
     color: #ff3131;
+    color: #ff6c6c;
     color: #729652;
     color: #338800;
+    /* #286907 */
     color: #085e0a;
     color: #000000;
+}
+.sub_heading{
+    text-align: center;
 }
 
 /* Navigation bar style start */
@@ -34,23 +40,27 @@ footer{
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px;
+    padding: 0 12px;
     margin-left: 0;
     border-bottom: 5px solid white;
+    height: 60px;
 } 
-.navigation_links a{
-    margin-right: 0;
-    padding: 15px 20px;
+.navigation_links a {
+    margin-right: 5px;
+    padding: 20px 20px;
     border-radius: 2px;
     color: #FFFFFF;
     font-weight: bold;
     text-decoration: none;
+    height: 100%;
 }
 .navigation_links a:hover{
     background-color: #286907;
 }
+
 .signlog a {
     margin-right: 0px;
+    margin-left: 9px;
     background-color: #ff3131;
     color:#FFFFFF;
     padding: 10px 20px;
@@ -58,13 +68,34 @@ footer{
     font-weight: bold;
     text-decoration: none;
 }
+.signlog a:hover {
+    background-color: #ffffff;
+    color: #000000;
+}
+.signlog, .settings_button {
+    display: inline-block;
+    vertical-align: middle;
+}
+.settings_button img {
+    width: 30px;
+    height: 30px;
+    margin: 0;
+    padding: 4px;
+    background-color: white;
+    border-radius: 100%;
+    cursor: pointer;
+    margin-left: 9px;
+}
+.settings_button img:hover {
+    background-color: #ff3131;
+}
 /* Navigation bar style end */
 
 /* Hero Image style start */
 .hero_image{
     background-image: url("../images/hero_image.PNG");
     background-repeat: no-repeat;
-    background-size: 100%;
+    background-size: cover;
     height: 36rem;
     background-position: center;
     border-bottom: 5px solid white;
@@ -74,46 +105,32 @@ footer{
     margin: 0;
     font-size: 6rem;
     color: #ff3131;
-    padding-top: 10rem;
+    padding-top: 10%;
 }
 .hero_text{
     color: #FFFFFF;
     font-size: 2rem;
     font-weight: bold;
 }
-.signup_hero_button{
+
+.signup_hero_button a{
     font-weight: bold;
     background-color: #ff3131;
-    margin: 0 55rem;
-    border: white;
+    padding: 1rem 2rem;
     border: 3px solid white;
     border-radius: 50px;
-}
-.signup_hero_button a{
     color: #FFFFFF;
     text-decoration: none;
 }
 /* Hero Image Style end */
 
 /* Home page Style start */
-.home_text{
-    align-items: center;
-    color: white;
-    gap: 12%;
-    margin: 0 15%;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    padding: 1%;
-}
+
 /* Home page Style end */
 
-/* Signup Page Style start */
+/* Dashboard Style start */
 
-/* Signup Page Style end */
-
-/* Login Page Style start */
-
-/* Login Page Style end */
+/* Dashboard Style end */
 
 /* Player Stats Page Style start */
 .player_stats_title{

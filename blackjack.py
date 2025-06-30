@@ -4,22 +4,24 @@ from flask_session import Session
 import sqlite3
 DATABASE = "blackjack.db"
 
-
+# flask_session stuff
 app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 app.secret_key = 'LETS GO GAMBLING!!! AW DANG IT!!'
 Session(app)
 
-
+# logged_in variable will be injected into every route
 @app.context_processor
-def logged_in():
+def inject_logged_in():
+    '''This function injects the logged_in variable into every route'''
     return dict(logged_in=session.get("logged_in"))
 
 
 @app.route('/')  # link with and without the /home will lead home
 @app.route('/home')
 def home():
+    '''This route is for the home page, which is accessible when not logged in.'''
     if session.get("logged_in"):
         return redirect('/dashboard')
     return render_template("home.html",
@@ -28,7 +30,8 @@ def home():
 
 @app.route('/dashboard')
 def dashboard():
-    if logged_in:
+    '''This route is for the dashboard page, which is only accessible if the user is logged in.'''
+    if session.get("logged_in"):
         login_msg = "You are logged in as"
         user_id = session.get("user_id")
         username = session.get("username")
@@ -45,7 +48,8 @@ def dashboard():
 
 @app.route('/play')
 def play():
-    if logged_in:
+    '''This route is for the play page, which is only accessible if the user is logged in.'''
+    if session.get("logged_in"):
         return render_template("play.html")
     else:
         return render_template("not_logged_in.html",
@@ -54,6 +58,7 @@ def play():
 
 @app.route('/stats', methods=['POST', 'GET'])
 def stats_search():
+    '''This route is for the stats page, which allows users to search for player stats by ID.'''
     if request.method == 'POST':
         searched_id = request.form['searched_id']
         db = sqlite3.connect(DATABASE)
@@ -74,13 +79,15 @@ def stats_search():
 
 @app.route('/about')
 def about():
+    '''This route is for the about page, which provides information about the project.'''
     return render_template("about.html",
                            title="About")
 
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
-    if logged_in():
+    '''This route is for the login page, which allows users to log in to their accounts.'''
+    if session.get("logged_in"):
         return redirect("/dashboard")
     username = request.form.get('username')
     password = request.form.get('password')
@@ -97,7 +104,7 @@ def login():
             session['user_id'] = results[0]
             session['username'] = username
             session['password'] = results[1]
-            return render_template("play.html", title="Play")
+            return render_template("dashboard.html", title="Dashboard")
         else:
             flash("Your Username or Password is incorrect")
             return render_template("login.html",
@@ -108,7 +115,9 @@ def login():
 
 @app.route('/signup', methods=['POST', 'GET'])
 def signup():
-    if logged_in():
+    '''This route is for the signup page, which allows users to create a new account.'''
+    # if user is logged in, redirect to dashboard
+    if session.get("logged_in"):
         return redirect("/dashboard")
     if request.method == 'POST':
         username = request.form['username']
@@ -149,12 +158,14 @@ def signup():
 
 @app.route('/settings')
 def settings():
+    '''This route is for the settings page, which allows users to change their account settings.'''
     return render_template("settings.html",
                            title="Settings")
 
 
 @app.route('/log_out')
 def logout():
+    '''This route is for logging out the user, clearing the session data.'''
     session.clear()
     return render_template("log_out.html",
                            title="Logged Out")
