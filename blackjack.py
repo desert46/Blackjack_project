@@ -11,6 +11,7 @@ app.config["SESSION_TYPE"] = "filesystem"
 app.secret_key = 'LETS GO GAMBLING!!! AW DANG IT!!'
 Session(app)
 
+
 # logged_in variable will be injected into every route
 @app.context_processor
 def inject_logged_in():
@@ -57,7 +58,7 @@ def play():
 
 
 @app.route('/stats', methods=['POST', 'GET'])
-def stats_search():
+def stats():
     '''This route is for the stats page, which allows users to search for player stats by ID.'''
     if request.method == 'POST':
         searched_id = request.form['searched_id']
@@ -67,13 +68,15 @@ def stats_search():
         # finding duplicate usernames
         sql = "SELECT * FROM Player WHERE id = ?"
         cursor.execute(sql, (searched_id,))
-        data = cursor.fetchone()
-        if data is None:
+        stats_data = cursor.fetchone()
+        if stats_data is None:
             flash("No Player found with this ID")
+        sql = '''SELECT name, description, image FROM Award WHERE id IN(
+        SELECT aid FROM PlayerAward WHERE pid=?'''
         db.close()
         return render_template("stats.html", title="Stats",
                                searched_id=searched_id,
-                               data=data,)
+                               stats_data=stats_data,)
     return render_template("stats.html", title="Stats")
 
 
@@ -97,6 +100,11 @@ def login():
         sql = "SELECT id, password FROM Player WHERE username = ?"
         cursor.execute(sql, (username,))
         results = cursor.fetchone()
+        db.close()
+        if results is None:
+            flash("Your Username or Password is incorrect")
+            return render_template("login.html",
+                                   title="Login")
         # gets password from the results and compares them
         if password == results[1]:
             # gets user_id if passwords match

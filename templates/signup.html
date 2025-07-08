@@ -5,11 +5,11 @@
 </h1>
 {% with messages = get_flashed_messages() %}
   {% if messages %}
-    <ul class=flashes>
+    <div class=flashes st>
     {% for message in messages %}
-      <li>{{ message }}</li>
+      {{ message }}
     {% endfor %}
-    </ul>
+    </div>
   {% endif %}
 {% endwith %}
 <p>test</p>

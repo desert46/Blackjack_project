@@ -3,110 +3,161 @@
 <h1 class="title player_stats_title">
     Search Stats
 </h1>
+<h2 class="sub_heading">
+    Search for Player ID
+</h2>
+
+
+
+<div class="stats_search_form">
+  <form method="post" action="/stats">
+    <table>
+        <tr class="stats_search_bar">
+          <td><input type="number" name="searched_id" maxlength="5" required></td>
+        </tr>
+        <tr class="stats_submit_button">
+            <td><input type="submit" value="Search"></td>
+        </tr>
+    </table>
+  </form>
+</div>
 
 {% with messages = get_flashed_messages() %}
   {% if messages %}
-    <ul class=flashes>
+    <div class=stats_flashes>
     {% for message in messages %}
-      <li>{{ message }}</li>
+      {{ message }}
     {% endfor %}
-    </ul>
+    </div>
   {% endif %}
 {% endwith %}
 
-<form method="post" action="/stats">
-  <table>
-      <tr>
-          <td>Search a Player ID here</td>
-      </tr>
-      <tr>
-          <td>ID</td>
-      </tr>
-      <tr>
-        <td><input type="number" name="searched_id" maxlength="5" required></td>
-      </tr>
-      <tr>
-          <td><input type="submit" value="Search"></td>
-      </tr>
+
+<div class="stats">
+  {% if stats_data %}
+  <table class="player_stats_table">
+    <tr>
+      <th class="player_stats_table_title" colspan="2" style="font-size: 1.5rem;">{{stats_data['username']}}'s [{{stats_data['id']}}] Statstics</th>
+    </tr>
+    <tr>
+      <th>Player ID:</th>
+      <td>{{stats_data['id']}}</td>
+    </tr>
+    <tr>
+      <th>Username:</th>
+      <td>{{stats_data['username']}}</td>
+    </tr>
+    <tr>
+      <th>XP:</th>
+      <td>{{stats_data['xp']}}</td>
+    </tr>
+    <tr>
+      <th>Level:</th>
+      <td>{{stats_data['Level']}}</td>
+    </tr>
+    <tr>
+      <th>Award Count:</th>
+      <td>{{stats_data['award_count']}}</td>
+    </tr>
+    <tr>
+      <th>Hands Played:</th>
+      <td>{{stats_data['hands_played']}}</td>
+    </tr>
+    <tr>
+      <th>Hands Won:</th>
+      <td>{{stats_data['wins']}}</td>
+    </tr>
+    <tr>
+      <th>Hands Lost:</th>
+      <td>{{stats_data['losses']}}</td>
+    </tr>
+
+    {% if stats_data['hands_played'] == 0 %}
+      {% set hands_win_loss_ratio = 0 %}
+    {% else %}
+      {% set hands_win_loss_ratio = stats_data['wins'] / stats_data['hands_played'] %}
+    {% endif %}
+    <tr>
+      <th>Win/Loss Ratio:</th>
+      <td>{{hands_win_loss_ratio}}</td>
+    </tr>
+
+    <tr>
+      <th>Pushes:</th>
+      <td>{{stats_data['pushes']}}</td>
+    </tr>
+    <tr>
+      <th>Money Won:</th>
+      <td>{{stats_data['money_wins']}}</td>
+    </tr>
+    <tr>
+      <th>Money Lost:</th>
+      <td>{{stats_data['money_losses']}}</td>
+    </tr>
+
+    {% set net_profit = stats_data['money_wins'] - stats_data['money_losses'] %}
+    <tr>
+      <th>Net Profit</th>
+      <td>{{net_profit}}</td>
+    </tr>
+
+    {% if stats_data['money_wins'] == 0 %}
+      {% set money_win_loss_ratio = 0 %}
+    {% else %}
+      {% set money_win_loss_ratio = stats_data['money_wins'] / stats_data['money_losses'] %}
+    {% endif %}
+    <tr>
+      <th>Money Win/Loss Ratio:</th>
+      <td>{{money_win_loss_ratio}}</td>
+    </tr>
+
+    <tr>
+      <th>Times Hits:</th>
+      <td>{{stats_data['hits']}}</td>
+    </tr>
+    <tr>
+      <th>Times Busted:</th>
+      <td>{{stats_data['busts']}}</td>
+    </tr>
+    <tr>
+      <th>Times Standed:</th>
+      <td>{{stats_data['stands']}}</td>
+    </tr>
+    <tr>
+      <th>Dealer Wins:</th>
+      <td>{{stats_data['dealer_higher']}}</td>
+    </tr>
+    <tr>
+      <th>Dealer Busts:</th>
+      <td>{{stats_data['dealer_busts']}}</td>
+    </tr>
+    <tr>
+      <th>Player Wins:</th>
+      <td>{{stats_data['player_higher']}}</td>
+    </tr>
+    <tr>
+      <th>Money:</th>
+      <td>{{stats_data['money']}}</td>
+    </tr>
   </table>
-</form>
-<hr>
-
-{% if data %}
-<table class="player_stats_table">
-  <tr>
-    <th>Player ID:</th>
-    <td>{{data['id']}}</td>
-  </tr>
-  <tr>
-    <th>Username:</th>
-    <td>{{data['username']}}</td>
-  </tr>
-  <tr>
-    <th>XP:</th>
-    <td>{{data['xp']}}</td>
-  </tr>
-  <tr>
-    <th>Level:</th>
-    <td>{{data['Level']}}</td>
-  </tr>
-  <tr>
-    <th>Award Count:</th>
-    <td>{{data['award_count']}}</td>
-  </tr>
-  <tr>
-    <th>Hands Played:</th>
-    <td>{{data['hands_played']}}</td>
-  </tr>
-  <tr>
-    <th>Hands Won:</th>
-    <td>{{data['wins']}}</td>
-  </tr>
-  <tr>
-    <th>Hands Lost:</th>
-    <td>{{data['losses']}}</td>
-  </tr>
-  <tr>
-    <th>Pushes:</th>
-    <td>{{data['pushes']}}</td>
-  </tr>
-  <tr>
-    <th>Money Won:</th>
-    <td>{{data['money_wins']}}</td>
-  </tr>
-  <tr>
-    <th>Money Lost:</th>
-    <td>{{data['money_losses']}}</td>
-  </tr>
-  <tr>
-    <th>Times Hits:</th>
-    <td>{{data['hits']}}</td>
-  </tr>
-  <tr>
-    <th>Times Busted:</th>
-    <td>{{data['busts']}}</td>
-  </tr>
-  <tr>
-    <th>Times Standed:</th>
-    <td>{{data['stands']}}</td>
-  </tr>
-  <tr>
-    <th>Dealer Wins:</th>
-    <td>{{data['dealer_higher']}}</td>
-  </tr>
-  <tr>
-    <th>Dealer Busts:</th>
-    <td>{{data['dealer_busts']}}</td>
-  </tr>
-  <tr>
-    <th>Player Wins:</th>
-    <td>{{data['player_higher']}}</td>
-  </tr>
-  <tr>
-    <th>Money:</th>
-    <td>{{data['money']}}</td>
-  </tr>
-</table>
-{% endif %}
-
+  
+  <table class="awards_table">
+    <tr>
+      <th colspan="3" class="awards_table_title" style="height: fit-content;">
+        {{ stats_data['username'] }}'s Awards
+      </th>
+    </tr>
+    <tr>
+      <th>Award Name and big stuff</th>
+      <td>Image</td>
+      <td>Description</td>
+    </tr>
+    <tr>
+      <th>Award Name</th>
+      <td>Image</td>
+      <td>Description</td>
+    </tr>
+  </table>
+  {% endif %}
+</div>
 {% endblock %}

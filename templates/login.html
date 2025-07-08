@@ -5,11 +5,11 @@
 </h1>
 {% with messages = get_flashed_messages() %}
   {% if messages %}
-    <ul class=flashes>
+    <div class=flashes st>
     {% for message in messages %}
-      <li>{{ message }}</li>
+      {{ message }}
     {% endfor %}
-    </ul>
+    </div>
   {% endif %}
 {% endwith %}
 <p>test</p>
@@ -20,11 +20,11 @@
         </tr>
         <tr>
             <td>Username</td>
-            <td><input type="text" name="username" maxlength="15" required></td>
+            <td><input type="text" name="username" required></td>
         </tr>
         <tr>
             <td>Password</td>
-            <td><input type="password" name="password" minlength="6"  maxlength="20" required></td>
+            <td><input type="password" name="password" required></td>
         </tr>
         <tr>
             <td><input type="submit" value="Login"></td>

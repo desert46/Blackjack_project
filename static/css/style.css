@@ -19,11 +19,11 @@ footer{
     margin: 1rem;
     font-size: 3rem;
     text-align: center;
+    color: white;
 }
 .colors{
     color: #FFFFFF;
     color: #ff3131;
-    color: #ff6c6c;
     color: #729652;
     color: #338800;
     /* #286907 */
@@ -32,10 +32,11 @@ footer{
 }
 .sub_heading{
     text-align: center;
+    color: #FFFFFF;
 }
 
 /* Navigation bar style start */
-.navigation_bar {
+.navigation_bar{
     background-color: #338800;
     display: flex;
     justify-content: space-between;
@@ -45,7 +46,7 @@ footer{
     border-bottom: 5px solid white;
     height: 60px;
 } 
-.navigation_links a {
+.navigation_links a{
     margin-right: 5px;
     padding: 20px 20px;
     border-radius: 2px;
@@ -133,14 +134,101 @@ footer{
 /* Dashboard Style end */
 
 /* Player Stats Page Style start */
-.player_stats_title{
-    text-align: center;
+.stats_search_form{
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    margin: 0;
+
 }
-.player_stats_table th,
-.player_stats_table td {
-    border: 1px solid black;
+.stats_search_bar{
+    display: flex;
+    justify-content: center;
+    margin: 0;
+    align-items: center;
+    width: 100%;
+    margin-left: -5%;
 }
-.player_stats_table {
+.stats_search_bar input{
+    width: 100%;
+    padding: 10px;
+    border-radius: 50px;
+    border: 2px solid #ff3131;
+    font-size: 1.2rem;
+    color: #000000;
+}
+.stats_submit_button{
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    margin: 0;
+}
+.stats_submit_button input{
+    background-color: #ff3131;
+    color: #FFFFFF;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+}
+.stats_submit_button input:hover{
+    background-color: #ffffff;
+    color: #000000;
+}
+.player_stats_table{
     border-collapse: separate;
+    width: 100%;
+    text-align: center;
+    color: #FFFFFF;
+}
+.player_stats_table th{
+    border: 3px solid white;
+    text-align: left;
+    padding: 2%;
+    background-color: #338800;
+    width: 35%;
+}
+.player_stats_table td{
+    border: 3px solid white;
+    padding: 2%;
+}
+.awards_table{
+    border-collapse: separate;
+    width: 100%;
+    height: fit-content;
+    text-align: center;
+    color: #FFFFFF;
+}
+.awards_table_title{
+    background-color: #338800;
+    color: #FFFFFF;
+    font-size: 1.5rem;
+    padding: 2%;
+}
+.awards_table th{
+    border: 3px solid white;
+    height: 150px;
+    width: 25%;
+    text-align: left;
+    padding: 2%;
+}
+.awards_table td{
+    border: 3px solid white;
+}
+.stats{
+    color: #FFFFFF;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin: 0 10%;
+    gap: 10%;
+    margin-top: 35px;
+}
+.stats_flashes{
+    text-align: center;
+    color: #ffffff;
+    font-weight: bold;
+    margin: 10px 0;
 }
 /* Player Stats Page Style end */
