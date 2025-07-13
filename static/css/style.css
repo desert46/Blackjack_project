@@ -3,7 +3,16 @@ body{
     font-family: "Roboto", sans-serif;
     margin: 0;
     padding: 0;
-    margin-bottom: 100px;
+}
+.space{
+    height: 20px;
+}
+.flashes{
+    text-align: center;
+    font-style: italic;
+    color: #ff3131;
+    font-weight: bold;
+    margin: 10px 0;
 }
 footer{
     background-color: #000000;
@@ -24,7 +33,6 @@ footer{
 .colors{
     color: #FFFFFF;
     color: #ff3131;
-    color: #729652;
     color: #338800;
     /* #286907 */
     color: #085e0a;
@@ -58,7 +66,6 @@ footer{
 .navigation_links a:hover{
     background-color: #286907;
 }
-
 .signlog a {
     margin-right: 0px;
     margin-left: 9px;
@@ -87,11 +94,67 @@ footer{
     cursor: pointer;
     margin-left: 9px;
 }
-.settings_button img:hover {
-    background-color: #ff3131;
-}
 /* Navigation bar style end */
-
+/* Login and Signup Page style start */
+.login_signup_form{
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    margin: auto;
+}
+.login_signup_title{
+    color: #FFFFFF;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+    width: 250px;
+}
+.username_and_password_bar{
+    display: flex;
+    justify-content: center;
+    margin-left: -2%;
+    align-items: center;
+    width: 420px;
+}
+.username_and_password_bar input{
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 2px solid #ff3131;
+    font-size: 1.2rem;
+    color: #000000;
+}
+.login_signup_submit_button{
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    margin: 0;
+}
+.login_signup_submit_button input{
+    background-color: #ff3131;
+    color: #FFFFFF;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+}
+.login_signup_submit_button input:hover{
+    background-color: #ffffff;
+    color: #000000;
+}
+.login_signup_subtitle{
+    width: 250px;
+    color: #ff3131;
+    font-size: 1rem;
+    text-align: left;
+    margin-top: 5px;
+}
+/* Login and Signup Page style end */
 /* Hero Image style start */
 .hero_image{
     background-image: url("../images/hero_image.PNG");
@@ -123,23 +186,23 @@ footer{
     color: #FFFFFF;
     text-decoration: none;
 }
+.signup_hero_button a:hover{
+    border-color: #ff3131;
+    background-color: #ffffff;
+    color: #000000;
+}
 /* Hero Image Style end */
 
 /* Home page Style start */
 
 /* Home page Style end */
 
-/* Dashboard Style start */
-
-/* Dashboard Style end */
-
-/* Player Stats Page Style start */
+/* Player Stats and Dashboard Page Style start */
 .stats_search_form{
     align-items: center;
     display: flex;
     justify-content: center;
     margin: 0;
-
 }
 .stats_search_bar{
     display: flex;
@@ -178,7 +241,7 @@ footer{
     color: #000000;
 }
 .player_stats_table{
-    border-collapse: separate;
+    border-collapse: collapse;
     width: 100%;
     text-align: center;
     color: #FFFFFF;
@@ -195,7 +258,6 @@ footer{
     padding: 2%;
 }
 .awards_table{
-    border-collapse: separate;
     width: 100%;
     height: fit-content;
     text-align: center;
@@ -209,13 +271,24 @@ footer{
 }
 .awards_table th{
     border: 3px solid white;
-    height: 150px;
+    height: 50px;
     width: 25%;
     text-align: left;
     padding: 2%;
 }
 .awards_table td{
     border: 3px solid white;
+}
+.award_img {
+    width: 90px;
+    height: 90px;
+    object-fit: contain;
+    display: block;
+    margin: 10px auto;
+}
+.award_img_box {
+    text-align: center;
+    width: 25%;
 }
 .stats{
     color: #FFFFFF;
@@ -225,10 +298,63 @@ footer{
     gap: 10%;
     margin-top: 35px;
 }
-.stats_flashes{
-    text-align: center;
-    color: #ffffff;
-    font-weight: bold;
-    margin: 10px 0;
+.dashboard_play_button {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+    width: 100%;
 }
-/* Player Stats Page Style end */
+.dashboard_play_button a {
+    font-weight: bold;
+    background-color: #ff3131;
+    padding: 1rem 5.5rem;
+    border: 3px solid white;
+    border-radius: 50px;
+    color: #FFFFFF;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.dashboard_play_button a:hover {
+    border-color: #ff3131;
+    background-color: #ffffff;
+    color: #000000;
+}
+.dashboard_play_button span {
+    display: block;
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 0;
+}
+/* Player Stats and Dashboard Page Style end */
+/* Error Page Style start */
+.error_page_background {
+    background-image: url("../images/background_404.jpg");
+    background-color: black;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 44rem;
+    background-position: center;
+    color: white;
+    text-align: center;
+    font-size: 6rem;
+}
+.error_page_title {
+    margin: 0;
+    padding-top: 4%;
+    font-size: 6rem;
+}
+.error_page_subtitle {
+    font-size: 2rem;
+    color: #ff3131;
+}
+.error_page_link{
+    font-size: 1rem;
+}
+.error_page_link a {
+    color: #FFFFFF
+}
+.error_page_link a:hover {
+    color: #ff3131;
+}
+/* Error Page Style end */

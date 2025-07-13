@@ -3,34 +3,48 @@
 <h1 class="title">
     Sign up
 </h1>
+
+
+<form method="post" action="/signup">
+    <table class="login_signup_form">
+        <tr>
+            <td class="login_signup_title">Username</td>
+        </tr>
+        <tr>
+            <td class="login_signup_subtitle">Must be between 5~15 characters, have a letter, contain no spaces or certain characters</td>
+        </tr>
+        <tr>    
+            <td class="username_and_password_bar" style="margin: 0;">
+                <input type="text" name="username" minlength="5" maxlength="15" required>
+            </td>
+        </tr>
+        <tr class="space"><td></td></tr>
+        <tr>
+            <td class="login_signup_title">Password</td>
+        </tr>
+        <tr>
+            <td class="login_signup_subtitle">Must be between 6~15 characters and contain a number</td>
+        <tr>           
+            <td class="username_and_password_bar" style="margin: 0;">
+                <input type="password" name="password" minlength="6"  maxlength="15" required>
+            </td>
+        </tr>
+        <tr class="login_signup_submit_button">
+            <td>
+                <input type="submit" value="Sign up">
+            </td>
+        </tr>
+    </table>
+</form>
+
 {% with messages = get_flashed_messages() %}
   {% if messages %}
-    <div class=flashes st>
+    <div class=flashes>
     {% for message in messages %}
       {{ message }}
     {% endfor %}
     </div>
   {% endif %}
 {% endwith %}
-<p>test</p>
-<form method="post" action="/signup">
-    <table>
-        <tr>
-            <td>Sign Up here</td>
-        </tr>
-        <tr>
-            <td>Username</td>
-            <td><input type="text" name="username" minlength="5" maxlength="15" required></td>
-        </tr>
-        <tr>
-            <td>Password</td>
-            <td><input type="password" name="password" minlength="6"  maxlength="15" required></td>
-        </tr>
-        <tr>
-            <td><input type="submit" value="Sign up"></td>
-        </tr>
-    </table>
-</form>
-<hr>
 
 {% endblock %}

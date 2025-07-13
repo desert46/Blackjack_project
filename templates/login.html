@@ -12,25 +12,33 @@
     </div>
   {% endif %}
 {% endwith %}
-<p>test</p>
-<form method="post" action="/login">
-    <table>
-        <tr>
-            <td>Login here</td>
-        </tr>
-        <tr>
-            <td>Username</td>
-            <td><input type="text" name="username" required></td>
-        </tr>
-        <tr>
-            <td>Password</td>
-            <td><input type="password" name="password" required></td>
-        </tr>
-        <tr>
-            <td><input type="submit" value="Login"></td>
-        </tr>
-    </table>
-</form>
-<hr>
+
+<div class="login_signup_form">
+    <form method="post" action="/login">
+        <table>
+            <tr>
+                <td class="login_signup_title">Username</td>
+            </tr>
+            <tr class="username_and_password_bar">
+                <td><input type="text" name="username" required></td>
+            </tr>
+            <tr class="space"><td></td></tr>
+            <tr>
+                <td class="login_signup_title">Password</td>
+            </tr>
+            <tr class="username_and_password_bar">
+                <td>
+                    <input type="password" name="password" required>
+                </td>
+            </tr>
+            <tr class="login_signup_submit_button">
+                <td>
+                    <input type="submit" value="Login">
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
 
 {% endblock %}

@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
-<h1 class="title player_stats_title">
+<h1 class="title">
     Dashboard
 </h1>
 
@@ -15,9 +15,147 @@
 {% endwith %}
 
 <h2 class="sub_heading">Welcome to your dashboard {{username}}!</h2>
-<p></p>
-<p>{{user_id}}</p>
 
-<p>test</p>
-<hr>
+<div class="dashboard_play_button">
+    <a href="play"> 
+      <span class="play_text" style="text-decoration: underline;">
+        PLAY
+      </span>
+      <div style="font-size: 16px; text-align: center;">
+        ${{stats_data['money']}} remaining
+      </div>
+      <div style="text-align: center; font-size: 16px;">
+        You are Level {{stats_data['level']}}
+      </div>
+    </a>
+</div>
+
+<div class="stats">
+  {% if stats_data %}
+  <table class="player_stats_table">
+    <tr>
+      <th class="player_stats_table_title" colspan="2" style="font-size: 1.5rem;">
+        Your Blackjack Statistics
+      </th>
+    </tr>
+    <tr>
+      <th>Player ID:</th>
+      <td>{{stats_data['id']}}</td>
+    </tr>
+    <tr>
+      <th>Username:</th>
+      <td>{{stats_data['username']}}</td>
+    </tr>
+    <tr>
+      <th>XP:</th>
+      <td>{{stats_data['xp']}}</td>
+    </tr>
+    <tr>
+      <th>Level:</th>
+      <td>{{stats_data['Level']}}</td>
+    </tr>
+    <tr>
+      <th>Award Count:</th>
+      <td>{{stats_data['award_count']}}</td>
+    </tr>
+    <tr>
+      <th>Hands Played:</th>
+      <td>{{stats_data['hands_played']}}</td>
+    </tr>
+    <tr>
+      <th>Hands Won:</th>
+      <td>{{stats_data['wins']}}</td>
+    </tr>
+    <tr>
+      <th>Hands Lost:</th>
+      <td>{{stats_data['losses']}}</td>
+    </tr>
+
+    {% if stats_data['hands_played'] == 0 %}
+      {% set hands_win_loss_ratio = 0 %}
+    {% else %}
+      {% set hands_win_loss_ratio = stats_data['wins'] / stats_data['hands_played'] %}
+    {% endif %}
+
+    <tr>
+      <th>Win/Loss Ratio:</th>
+      <td>{{hands_win_loss_ratio}}</td>
+    </tr>
+    <tr>
+      <th>Pushes:</th>
+      <td>{{stats_data['pushes']}}</td>
+    </tr>
+    <tr>
+      <th>Money Won:</th>
+      <td>${{stats_data['money_wins']}}</td>
+    </tr>
+    <tr>
+      <th>Money Lost:</th>
+      <td>${{stats_data['money_losses']}}</td>
+    </tr>
+
+    {% set net_profit = stats_data['money_wins'] - stats_data['money_losses'] %}
+    <tr>
+      <th>Net Profit</th>
+      <td>${{net_profit}}</td>
+    </tr>
+
+    {% if stats_data['money_wins'] == 0 %}
+      {% set money_win_loss_ratio = 0 %}
+    {% else %}
+      {% set money_win_loss_ratio = stats_data['money_wins'] / stats_data['money_losses'] %}
+    {% endif %}
+
+    <tr>
+      <th>Money Win/Loss Ratio:</th>
+      <td>{{money_win_loss_ratio}}</td>
+    </tr>
+
+    <tr>
+      <th>Times Hits:</th>
+      <td>{{stats_data['hits']}}</td>
+    </tr>
+    <tr>
+      <th>Times Busted:</th>
+      <td>{{stats_data['busts']}}</td>
+    </tr>
+    <tr>
+      <th>Times Standed:</th>
+      <td>{{stats_data['stands']}}</td>
+    </tr>
+    <tr>
+      <th>Dealer Wins:</th>
+      <td>{{stats_data['dealer_higher']}}</td>
+    </tr>
+    <tr>
+      <th>Dealer Busts:</th>
+      <td>{{stats_data['dealer_busts']}}</td>
+    </tr>
+    <tr>
+      <th>Player Wins:</th>
+      <td>{{stats_data['player_higher']}}</td>
+    </tr>
+    <tr>
+      <th>Money:</th>
+      <td>${{stats_data['money']}}</td>
+    </tr>
+  </table>
+  
+  <table class="awards_table">
+    <tr>
+      <th colspan="3" class="awards_table_title" style="height: fit-content;">
+        Your awards cabinet
+      </th>
+
+    {% for award in awards %}
+    <tr>
+      <th>{{award.name}}</th>
+      <td class="award_img_box"><img class="award_img" src="{{award.image}}" alt=""></td>
+      <td>{{award.description}}</td>
+    </tr>
+    {% endfor %}
+
+  </table>
+  {% endif %}
+</div>
 {% endblock %}

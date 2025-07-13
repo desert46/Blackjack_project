@@ -1,6 +1,10 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<p>You need to be logged in to view this page</p>
+<div class="error_page_background">
+    <h1 class="error_page_title">You are not logged in</h1>
+    <h2 class="error_page_subtitle">No offence, but you need to be logged in to access this page!</h2>
+    <h3 class="error_page_link"><a href="/home">Click here to go back home</a></h3>
+</div>
 
 {% endblock %}

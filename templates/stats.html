@@ -7,8 +7,6 @@
     Search for Player ID
 </h2>
 
-
-
 <div class="stats_search_form">
   <form method="post" action="/stats">
     <table>
@@ -24,7 +22,7 @@
 
 {% with messages = get_flashed_messages() %}
   {% if messages %}
-    <div class=stats_flashes>
+    <div class=flashes>
     {% for message in messages %}
       {{ message }}
     {% endfor %}
@@ -37,7 +35,9 @@
   {% if stats_data %}
   <table class="player_stats_table">
     <tr>
-      <th class="player_stats_table_title" colspan="2" style="font-size: 1.5rem;">{{stats_data['username']}}'s [{{stats_data['id']}}] Statstics</th>
+      <th class="player_stats_table_title" colspan="2" style="font-size: 1.5rem;">
+        {{stats_data['username']}}'s Statstics
+      </th>
     </tr>
     <tr>
       <th>Player ID:</th>
@@ -77,6 +77,7 @@
     {% else %}
       {% set hands_win_loss_ratio = stats_data['wins'] / stats_data['hands_played'] %}
     {% endif %}
+    
     <tr>
       <th>Win/Loss Ratio:</th>
       <td>{{hands_win_loss_ratio}}</td>
@@ -88,17 +89,17 @@
     </tr>
     <tr>
       <th>Money Won:</th>
-      <td>{{stats_data['money_wins']}}</td>
+      <td>${{stats_data['money_wins']}}</td>
     </tr>
     <tr>
       <th>Money Lost:</th>
-      <td>{{stats_data['money_losses']}}</td>
+      <td>${{stats_data['money_losses']}}</td>
     </tr>
 
     {% set net_profit = stats_data['money_wins'] - stats_data['money_losses'] %}
     <tr>
       <th>Net Profit</th>
-      <td>{{net_profit}}</td>
+      <td>${{net_profit}}</td>
     </tr>
 
     {% if stats_data['money_wins'] == 0 %}
@@ -106,6 +107,7 @@
     {% else %}
       {% set money_win_loss_ratio = stats_data['money_wins'] / stats_data['money_losses'] %}
     {% endif %}
+
     <tr>
       <th>Money Win/Loss Ratio:</th>
       <td>{{money_win_loss_ratio}}</td>
@@ -137,7 +139,7 @@
     </tr>
     <tr>
       <th>Money:</th>
-      <td>{{stats_data['money']}}</td>
+      <td>${{stats_data['money']}}</td>
     </tr>
   </table>
   
@@ -147,16 +149,15 @@
         {{ stats_data['username'] }}'s Awards
       </th>
     </tr>
+
+    {% for award in awards %}
     <tr>
-      <th>Award Name and big stuff</th>
-      <td>Image</td>
-      <td>Description</td>
+      <th>{{award.name}}</th>
+      <td class="award_img_box"><img class="award_img" src="{{award.image}}" alt=""></td>
+      <td>{{award.description}}</td>
     </tr>
-    <tr>
-      <th>Award Name</th>
-      <td>Image</td>
-      <td>Description</td>
-    </tr>
+    {% endfor %}
+
   </table>
   {% endif %}
 </div>
