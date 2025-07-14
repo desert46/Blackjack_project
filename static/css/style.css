@@ -194,7 +194,14 @@ footer{
 /* Hero Image Style end */
 
 /* Home page Style start */
+.home_row{
+    border-bottom: 5px solid white;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10%;
+    padding: 2.5% 10%;
 
+}
 /* Home page Style end */
 
 /* Player Stats and Dashboard Page Style start */
@@ -245,6 +252,7 @@ footer{
     width: 100%;
     text-align: center;
     color: #FFFFFF;
+    margin-bottom: 100px;
 }
 .player_stats_table th{
     border: 3px solid white;
