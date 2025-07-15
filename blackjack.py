@@ -2,21 +2,23 @@
 from flask import Flask, render_template, request, flash, session, redirect
 from flask_session import Session
 import sqlite3
+import random
 DATABASE = "blackjack.db"
 
-# flask_session stuff
+
 app = Flask(__name__)
+# flask_session stuff
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 app.secret_key = 'LETS GO GAMBLING!!! AW DANG IT!!'
 Session(app)
 
 
-# logged_in variable will be injected into every route
 @app.context_processor
-def inject_logged_in():
-    '''This function injects the logged_in variable into every route'''
-    return dict(logged_in=session.get("logged_in"))
+def inject_variables():
+    '''This function injects these variable into every route'''
+    return dict(logged_in=session.get("logged_in"),
+                show_footer=True)
 
 
 @app.route('/')  # link with and without the /home will lead home
@@ -63,7 +65,8 @@ def play():
         flash("Login to play Blackjack")
         return redirect("/login")
     return render_template("play.html",
-                           title="Play",)
+                           title="Play",
+                           show_footer=False)
 
 
 @app.route('/stats', methods=['POST', 'GET'])
@@ -217,8 +220,7 @@ def logout():
     if not session.get("logged_in"):
         return redirect('/home')
     session.clear()
-    return render_template("log_out.html",
-                           title="Logged Out")
+    return redirect('/login')
 
 
 @app.errorhandler(404)

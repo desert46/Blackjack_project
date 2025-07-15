@@ -195,13 +195,14 @@ footer{
 
 /* Home page Style start */
 .home_row{
+    color: #FFFFFF;
     border-bottom: 5px solid white;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10%;
     padding: 2.5% 10%;
-
 }
+
 /* Home page Style end */
 
 /* Player Stats and Dashboard Page Style start */
@@ -337,7 +338,7 @@ footer{
 /* Player Stats and Dashboard Page Style end */
 /* Error Page Style start */
 .error_page_background {
-    background-image: url("../images/background_404.jpg");
+    background-image: url("../images/error_background.jpg");
     background-color: black;
     background-repeat: no-repeat;
     background-size: cover;

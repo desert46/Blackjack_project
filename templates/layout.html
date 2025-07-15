@@ -13,8 +13,10 @@
     <nav>{% include "navigation.html"%}</nav>
     <header>{% include "header.html" %}</header>
     <main>{% block content %} {% endblock %}</main>
+    {% if show_footer %}
     <footer>
         (c)2025
     </footer>
+    {% endif %}
 </body>
 </html>
