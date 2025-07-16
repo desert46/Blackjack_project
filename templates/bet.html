@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block content %}
+
+
+<form method="post" action="/signup">
+    <table class="login_signup_form">
+        <tr>
+            <td>Please enter your bet size</td>
+        </tr>
+        <tr>           
+            <td>
+                <input type="number" name="bet" required>
+            </td>
+        </tr>
+    </table>
+</form>
+
+{% endblock %}
