@@ -1,16 +1,34 @@
 {% extends "layout.html" %}
 {% block content %}
 
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class=flashes>
+    {% for message in messages %}
+      {{ message }}
+    {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
 
-<form method="post" action="/signup">
+<form method="post" action="/bet">
     <table class="login_signup_form">
         <tr>
             <td>Please enter your bet size</td>
+        </tr>
+        <tr>
+            <td>You have ${{money}}</td>
+        </tr>
+        <tr>
+            <td>You have </td>
         </tr>
         <tr>           
             <td>
                 <input type="number" name="bet" required>
             </td>
+        </tr>
+        <tr>
+            <td><input type="submit" value="Bet"></td>
         </tr>
     </table>
 </form>
