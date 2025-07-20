@@ -1,15 +1,9 @@
 {% extends "layout.html" %}
 {% block content %}
 
-{% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <div class=flashes>
-    {% for message in messages %}
-      {{ message }}
-    {% endfor %}
-    </div>
-  {% endif %}
-{% endwith %}
+<h1 class="title">
+    Enter your bet size
+</h1>
 
 <form method="post" action="/bet">
     <table class="login_signup_form">
@@ -20,7 +14,7 @@
             <td>You have ${{money}}</td>
         </tr>
         <tr>
-            <td>You have </td>
+            <td>Minumum bet is $10</td>
         </tr>
         <tr>           
             <td>
@@ -32,5 +26,15 @@
         </tr>
     </table>
 </form>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class=flashes>
+    {% for message in messages %}
+      {{ message }}
+    {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
 
 {% endblock %}

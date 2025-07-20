@@ -99,7 +99,7 @@ while True:
         bet = int(bet)
         if money <= 0:
             print("You have no money left to bet. Game over!")
-            break    
+            break
         if bet > money:
             print(f"You cannot bet more than your current money: ${money}")
             continue

@@ -98,49 +98,50 @@ def bet():
     if not session.get('logged_in'):
         return render_template("not_logged_in.html")
 
-    print("Welcome to Blackjack!")
-
+    # initialising variables
     session['shoe'] = new_deck()
     session['card_values'] = create_card_values()
     session['player_hand_values'] = []
     session['dealer_hand_values'] = []
+    session['bet'] = 0
 
     # If the shoe has less than 100 cards, reshuffle
     if len(session['shoe']) < 100:
         flash("Shoe has been reshuffled!")
         session['shoe'] = new_deck()
-    flash(f"You have ${session['money']}")
+
+    # form processing
     if request.method == 'POST':
         session['bet'] = request.form['bet']
         # checking if the bet amount is valid
         if session['bet'].isdecimal():
             session['bet'] = int(session['bet'])
-            if session['money'] <= 0:
-                flash("You have no money left to bet. Game over!")
-                return render_template("bet.html",
-                                       title="Play",
-                                       show_footer=False)
             if session['bet'] > session['money']:
                 flash(f"You only have ${session['money']}")
                 return render_template("bet.html",
                                        title="Play",
+                                       money=session['money'],
                                        show_footer=False)
             if session['bet'] <= 0:
                 flash("Bet must be a positive amount.")
                 return render_template("bet.html",
                                        title="Play",
+                                       money=session['money'],
                                        show_footer=False)
             if session['bet'] < 10:
                 flash("Minimum bet is $10.")
                 return render_template("bet.html",
                                        title="Play",
+                                       money=session['money'],
                                        show_footer=False)
         else:
             flash("Invalid input. Please enter a valid amount.")
             return render_template("bet.html",
                                    title="Play",
+                                   money=session['money'],
                                    show_footer=False)
 
+        # processing bet after a valid input is accepted
         session['money'] -= session['bet']
         db = sqlite3.connect(DATABASE)
         cursor = db.cursor()
@@ -148,14 +149,9 @@ def bet():
         cursor.execute(sql, (session['money'], session['user_id']))
         db.commit()
         db.close()
-        print(f"{session['money']}")
-        print(session['bet'])
-        return render_template("bet.html",
-                               title="Play",
-                               money=session['money'],
-                               show_footer=False)
+        session['active_hand'] = True
+        return redirect('/play')
 
-    print(f"You have ${session['money']} left.")
     return render_template("bet.html",
                            title="Play",
                            money=session['money'],
@@ -168,14 +164,17 @@ def play():
     if not session.get("logged_in"):
         flash("Login to play Blackjack")
         return redirect("/login")
+    if not session['active_hand']:
+        # /play will redirect to betting to start the game
+        return redirect('/bet')
 
     return render_template("play.html",
                            title="Play",
                            show_footer=False)
 
 
-
 # game stuff end
+
 
 @app.route('/stats', methods=['POST', 'GET'])
 def stats():
@@ -295,10 +294,12 @@ def signup():
         INSERT INTO Player (username, password)
         VALUES (?, ?)'''  # sql query to create an account
         cursor.execute(sql, (username, password))
-        db.commit()  # account created successfully
+        db.commit()
+        db.close  # account created successfully
 
         # awarding the player with "Diamond_Create_Account"
         user_id = cursor.lastrowid
+        db = sqlite3.connect(DATABASE)
         sql = '''INSERT INTO PlayerAward (pid, aid) VALUES (?, 1)'''
         cursor.execute(sql, (user_id,))
         sql = '''UPDATE Player SET award_count = award_count + 1
