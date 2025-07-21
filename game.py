@@ -200,8 +200,8 @@ while True:
                     dealers_hidden_hand.append(shoe[0])
                     shoe.pop(0)
                     dealer_hand_values, dealers_hidden_hand = calculate_hand_value(card_values,
-                                                                                hand=dealers_hidden_hand,
-                                                                                hand_values=dealer_hand_values)
+                                                                                   hand=dealers_hidden_hand,
+                                                                                   hand_values=dealer_hand_values)
                     print(f"Dealer drew: {dealers_hidden_hand[-1]}")
                 print(f"Dealer's Hand: {dealers_hidden_hand}")
                 print(f"Dealer's Hand Value: {sum(dealer_hand_values)}")

@@ -92,6 +92,52 @@ def create_card_values():
 # defining functions for game end
 
 
+def hand_start(money, bet, shoe, card_values):
+    '''Starts the game by dealing two cards to the player and dealer.'''
+    natural = False
+    player_hand = []
+    dealers_hidden_hand = []
+    dealers_shown_hand = []
+    player_hand_values = []
+    dealer_hand_values = []
+    # Deal two cards to the player and dealer
+    for i in range(2):
+        player_hand.append(shoe[0])
+        shoe.pop(0)
+        dealers_hidden_hand.append(shoe[0])
+        dealers_shown_hand.append(shoe[0])
+        shoe.pop(0)
+    dealers_shown_hand[0] = "Hidden Card"  # hide one of the dealer's cards
+    # calculate the initial hand values for the two cards dealt
+    for card in player_hand:
+        # card[0] takes the rank of the card
+        player_hand_values.append(card_values[card[0]])
+    for card in dealers_hidden_hand:
+        dealer_hand_values.append(card_values[card[0]])
+    # Pocket aces scenario
+    # Sets one of the aces to 1
+    if player_hand_values == [11, 11]:
+        player_hand_values = [1, 11]
+    if dealer_hand_values == [11, 11]:
+        dealer_hand_values = [1, 11]
+    # checking for naturals
+    if sum(player_hand_values) == 21:
+        natural = True
+        if sum(dealer_hand_values) == 21:
+            print("Both you and the dealer hit a natural")
+            print("You get your bet back.")
+        else:
+            print("You hit a natural!")
+            print(f"You won ${bet * 2.5}!")
+            money += bet * 2.5
+    elif sum(dealer_hand_values) == 21:
+        natural = True
+        print("Dealer hit a natural!")
+        print(f"You lost your bet of ${bet}.")
+    # returns lots of values to 
+    return player_hand, dealers_hidden_hand, dealers_shown_hand, player_hand_values, dealer_hand_values, natural
+
+
 @app.route('/bet', methods=['POST', 'GET'])
 def bet():
     '''The betting page before he game starts'''
@@ -99,7 +145,7 @@ def bet():
         return render_template("not_logged_in.html")
 
     # initialising variables
-    session['shoe'] = new_deck()
+
     session['card_values'] = create_card_values()
     session['player_hand_values'] = []
     session['dealer_hand_values'] = []
@@ -153,9 +199,9 @@ def bet():
         return redirect('/play')
 
     return render_template("bet.html",
-                           title="Play",
-                           money=session['money'],
-                           show_footer=False)
+                           title="Play", 
+                           show_footer=False,
+                           money=session['money'])
 
 
 @app.route('/play')
@@ -168,9 +214,33 @@ def play():
         # /play will redirect to betting to start the game
         return redirect('/bet')
 
+    # Starts the hand, see the hand start function
+    (session['player_hand'],
+     session['dealers_hidden_hand'],
+     session['dealers_shown_hand'],
+     session['player_hand_values'],
+     session['dealer_hand_values'],
+     session['natural']) = hand_start(session['money'],
+                                      session['bet'],
+                                      session['shoe'],
+                                      session['card_values'])
+
+    if session.get('natural'):
+        print("\n")
+        print(f"Your Hand: {session['player_hand']}")
+        print(f"Your Hand Value: {sum(session['player_hand_values'])}")
+        print(f"Dealer's Hand: {session['dealers_shown_hand']}")
+        # asks player to make a move (hit or stand)
+    session['can_double_down'] = True
+
     return render_template("play.html",
                            title="Play",
-                           show_footer=False)
+                           show_footer=False,
+                           player_hand=session['player_hand'],
+                           dealers_shown_hand=session['dealers_shown_hand'],)
+
+
+
 
 
 # game stuff end
@@ -236,6 +306,7 @@ def login():
             session['money'] = results[2]
             session['bet'] = 0
             session['active_hand'] = False
+            session['shoe'] = new_deck()  # new shoe upon new session
             return redirect("/dashboard")
         else:
             flash("Your Username or Password is incorrect")
