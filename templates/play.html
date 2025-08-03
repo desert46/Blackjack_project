@@ -4,20 +4,42 @@
     Play Blackjack
 </h1>
 
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+  
+    <div class=flashes>
+      <ul>
+      {% for message in messages %}
+        <li>
+        {{ message }}
+        </li>
+      {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+{% endwith %}
+
 <div class="dealers_cards">
-    {{dealers_shown_hand}}
+    {{dealers_hand}}
+
 </div>
 
 <div class="players_cards">
     {{player_hand}}
+    <br>
+    {{player_hand_values}}
 </div>
+  <div class="action_buttons">
+{% if active_hand %}
 
-<div class="action_buttons">
-    <a href="/hit">Hit</a>
-    <a href="/stand">Stand</a>
-    <a href="/double_down">Double Down</a>
+      <a href="/hit">Hit</a>
+      <a href="/stand">Stand</a>
+      <a href="/double_down">Double Down</a>
+ 
+{% else %}
+  <a href="/play">Exit</a>
+{% endif %}
 </div>
-
 
 
 <hr>

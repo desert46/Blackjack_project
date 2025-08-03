@@ -4,6 +4,7 @@
     Dashboard
 </h1>
 
+<!-- Flashes -->
 {% with messages = get_flashed_messages() %}
   {% if messages %}
     <div class=flashes>
@@ -13,6 +14,7 @@
     </div>
   {% endif %}
 {% endwith %}
+<!-- Flashes end -->
 
 <h2 class="sub_heading">Welcome to your dashboard {{username}}!</h2>
 

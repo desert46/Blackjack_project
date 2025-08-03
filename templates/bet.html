@@ -26,7 +26,7 @@
         </tr>
     </table>
 </form>
-
+<!-- Flashes -->
 {% with messages = get_flashed_messages() %}
   {% if messages %}
     <div class=flashes>
@@ -36,5 +36,6 @@
     </div>
   {% endif %}
 {% endwith %}
+<!-- Flashes end -->
 
 {% endblock %}

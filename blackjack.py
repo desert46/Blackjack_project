@@ -36,6 +36,9 @@ def dashboard():
     '''This route is for the dashboard page'''
     if not session.get("logged_in"):
         return redirect('/home')
+    elif session.get('active_hand'):
+        flash("You need to finish your current hand before you can access the dashboard")
+        return redirect('/play')
     user_id = session.get("user_id")
     username = session.get("username")
     db = sqlite3.connect(DATABASE)
@@ -84,58 +87,26 @@ def new_deck():
 
 def create_card_values():
     '''Returns a dictionary of card values for blackjack.'''
-    return {
+    card_values = {
         '2': 2, '3': 3, '4': 4, '5': 5, '6': 6,
         '7': 7, '8': 8, '9': 9, 'T': 10,
         'J': 10, 'Q': 10, 'K': 10, 'A': 11
     }
+    return card_values
+
+
 # defining functions for game end
 
 
-def hand_start(money, bet, shoe, card_values):
-    '''Starts the game by dealing two cards to the player and dealer.'''
-    natural = False
-    player_hand = []
-    dealers_hidden_hand = []
-    dealers_shown_hand = []
-    player_hand_values = []
-    dealer_hand_values = []
-    # Deal two cards to the player and dealer
-    for i in range(2):
-        player_hand.append(shoe[0])
-        shoe.pop(0)
-        dealers_hidden_hand.append(shoe[0])
-        dealers_shown_hand.append(shoe[0])
-        shoe.pop(0)
-    dealers_shown_hand[0] = "Hidden Card"  # hide one of the dealer's cards
-    # calculate the initial hand values for the two cards dealt
-    for card in player_hand:
-        # card[0] takes the rank of the card
-        player_hand_values.append(card_values[card[0]])
-    for card in dealers_hidden_hand:
-        dealer_hand_values.append(card_values[card[0]])
-    # Pocket aces scenario
-    # Sets one of the aces to 1
-    if player_hand_values == [11, 11]:
-        player_hand_values = [1, 11]
-    if dealer_hand_values == [11, 11]:
-        dealer_hand_values = [1, 11]
-    # checking for naturals
-    if sum(player_hand_values) == 21:
-        natural = True
-        if sum(dealer_hand_values) == 21:
-            print("Both you and the dealer hit a natural")
-            print("You get your bet back.")
-        else:
-            print("You hit a natural!")
-            print(f"You won ${bet * 2.5}!")
-            money += bet * 2.5
-    elif sum(dealer_hand_values) == 21:
-        natural = True
-        print("Dealer hit a natural!")
-        print(f"You lost your bet of ${bet}.")
-    # returns lots of values to 
-    return player_hand, dealers_hidden_hand, dealers_shown_hand, player_hand_values, dealer_hand_values, natural
+def winnings(multiplier):
+    '''SQL query to add winnings after a player wins a hand'''
+    session['money'] += session['bet']*multiplier
+    db = sqlite3.connect(DATABASE)
+    cursor = db.cursor()
+    sql = '''UPDATE Player SET money = ? WHERE id = ?'''
+    cursor.execute(sql, (session['money'], session['user_id']))
+    db.commit()
+    db.close()
 
 
 @app.route('/bet', methods=['POST', 'GET'])
@@ -143,9 +114,11 @@ def bet():
     '''The betting page before he game starts'''
     if not session.get('logged_in'):
         return render_template("not_logged_in.html")
+    if session.get('active_hand'):
+        flash("You need to finish your current hand before you can access the dashboard")
+        return redirect('/play')
 
     # initialising variables
-
     session['card_values'] = create_card_values()
     session['player_hand_values'] = []
     session['dealer_hand_values'] = []
@@ -195,49 +168,185 @@ def bet():
         cursor.execute(sql, (session['money'], session['user_id']))
         db.commit()
         db.close()
+
         session['active_hand'] = True
+        (session['player_hand'],
+         session['dealers_hidden_hand'],
+         session['dealers_shown_hand'],
+         session['player_hand_values'],
+         session['dealer_hand_values'],
+         session['natural']) = hand_start(session['bet'],
+                                          session['shoe'],
+                                          session['card_values'])
+
         return redirect('/play')
 
     return render_template("bet.html",
-                           title="Play", 
+                           title="Play",
                            show_footer=False,
                            money=session['money'])
 
 
 @app.route('/play')
 def play():
-    '''This route is for the play page, which is only accessible if the user is logged in.'''
-    if not session.get("logged_in"):
-        flash("Login to play Blackjack")
-        return redirect("/login")
+    '''The actual game'''
+    if not session.get('logged_in'):
+        return render_template("not_logged_in.html")
+
+    if session.get('active_hand'):
+
+        if session.get('natural'):
+            session['active_hand'] = False
+            flash('Natural')
+            return render_template("play.html",
+                                   title="Play",
+                                   show_footer=False,
+                                    active_hand=False,
+                                    dealers_hand=session['dealers_hidden_hand'],
+                                    player_hand=session['player_hand'],
+                                    player_hand_values=sum(session['player_hand_values']))
+        else:
+            return render_template("play.html",
+                                title="Play",
+                                show_footer=False,
+                                active_hand=session['active_hand'],
+                                dealers_hand=session['dealers_shown_hand'],
+                                player_hand=session['player_hand'],
+                                player_hand_values=sum(session['player_hand_values']))
+    else:
+        flash('Make a bet to play')
+        return redirect('bet')
+
+
+def hand_start(bet, shoe, card_values):
+    '''Starts the game by dealing two cards to the player and dealer.'''
+    natural = False
+    player_hand = []
+    dealers_hidden_hand = []
+    dealers_shown_hand = []
+    player_hand_values = []
+    dealer_hand_values = []
+    # Deal two cards to the player and dealer
+    for i in range(2):
+        player_hand.append(shoe[0])
+        shoe.pop(0)
+        dealers_hidden_hand.append(shoe[0])
+        dealers_shown_hand.append(shoe[0])
+        shoe.pop(0)
+    dealers_shown_hand[0] = "Xx"  # hide one of the dealer's cards
+    # calculate the initial hand values for the two cards dealt
+    for card in player_hand:
+        # card[0] takes the rank of the card
+        player_hand_values.append(card_values[card[0]])
+    for card in dealers_hidden_hand:
+        dealer_hand_values.append(card_values[card[0]])
+    # Pocket aces scenario
+    # Sets one of the aces to 1
+    if player_hand_values == [11, 11]:
+        player_hand_values = [1, 11]
+    if dealer_hand_values == [11, 11]:
+        dealer_hand_values = [1, 11]
+    # checking for naturals
+    if sum(player_hand_values) == 21:
+        natural = True
+        if sum(dealer_hand_values) == 21:
+            # dealer hits a natural
+            flash("Both you and the dealer hit a natural")
+            flash("You get your bet back.")
+            winnings(1)
+        else:
+            #  you hit a natural but the dealer didn't
+            flash("You hit a natural!")
+            flash(f"You won ${bet * 2.5}!")
+            winnings(2.5)
+
+    elif sum(dealer_hand_values) == 21:
+        # both players hit a natural
+        natural = True
+        flash("Dealer hit a natural!")
+        flash(f"You lost your bet of ${bet}.")
+
+    return player_hand, dealers_hidden_hand, dealers_shown_hand, player_hand_values, dealer_hand_values, natural
+
+
+@app.route('/hit')
+def hit():
+    '''Player chooses to hit in Blackjack'''
     if not session['active_hand']:
-        # /play will redirect to betting to start the game
-        return redirect('/bet')
+        return redirect('play')
+    session['can_double_down'] = False
+    session['player_hand'].append(session['shoe'][0])
+    session['shoe'].pop(0)
+    (session['player_hand_values'],
+     session['player_hand']) = calculate_hand_value(session['card_values'],
+                                         hand=session['player_hand'],
+                                         hand_values=session['player_hand_values'])
+    flash(f"You drew: {session['player_hand'][-1]}")
+    flash(f"Your Hand: {session['player_hand']}")
+    flash(f"Your Hand Value: {sum(session['player_hand_values'])}")
+    if sum(session['player_hand_values']) > 21:
+        flash("You busted")
+        flash(f"You lost your bet of ${session['bet']}")
+        return hand_end_template()
+    return redirect('/play')
 
-    # Starts the hand, see the hand start function
-    (session['player_hand'],
-     session['dealers_hidden_hand'],
-     session['dealers_shown_hand'],
-     session['player_hand_values'],
-     session['dealer_hand_values'],
-     session['natural']) = hand_start(session['money'],
-                                      session['bet'],
-                                      session['shoe'],
-                                      session['card_values'])
 
-    if session.get('natural'):
-        print("\n")
-        print(f"Your Hand: {session['player_hand']}")
-        print(f"Your Hand Value: {sum(session['player_hand_values'])}")
-        print(f"Dealer's Hand: {session['dealers_shown_hand']}")
-        # asks player to make a move (hit or stand)
-    session['can_double_down'] = True
+@app.route('/stand')
+def stand():
+    flash("You chose to stand.")
+    flash(f"Dealer's Hand was: {session['dealers_hidden_hand']}")
+    while sum(session['dealer_hand_values']) < 17:
+        session['dealers_hidden_hand'].append(session['shoe'][0])
+        session['shoe'].pop(0)
+        (session['dealer_hand_values'],
+         session['dealers_hidden_hand']) = calculate_hand_value(session['card_values'],
+                                                                hand=session['dealers_hidden_hand'],
+                                                                hand_values=session['dealer_hand_values'])
+        flash(f"Dealer drew: {session['dealers_hidden_hand'][-1]}")
+    flash(f"Dealer's Hand: {session['dealers_hidden_hand']}")
+    flash(f"Dealer's Hand Value: {sum(session['dealer_hand_values'])}")
+    if sum(session['dealer_hand_values']) > 21:
+        flash("Dealer went bust. ")
+        flash(f"You won ${session['bet'] * 2}!")
+        winnings(2)
+        return hand_end_template()
+    elif sum(session['dealer_hand_values']) > sum(session['player_hand_values']):
+        flash("Dealer's hand was higher than yours")
+        flash(f"You lost your bet of ${session['bet']}")
+        return hand_end_template()
+    elif sum(session['dealer_hand_values']) < sum(session['player_hand_values']):
+        flash("Your hand was higher than the dealers")
+        flash(f"You won ${session['bet'] * 2}!")
+        winnings(2)
+        return hand_end_template()
+    elif sum(session['dealer_hand_values']) == sum(session['player_hand_values']):
+        flash("It's a push!")
+        flash(f"You get your bet of ${session['bet']} back.")
+        winnings(1)
+        return hand_end_template()
 
+
+def end_hand():
+    session.pop('active_hand', False)
+    session.pop('bet', None)
+    session.pop('player_hand', None)
+    session.pop('player_hand_values', None)
+    session.pop('dealers_shown_hand', None)
+    session.pop('dealers_hidden_hand', None)
+    session.pop('dealer_hand_value', None)
+    session.pop('natural', None)
+
+
+def hand_end_template():
+    session['active_hand'] = False
     return render_template("play.html",
-                           title="Play",
-                           show_footer=False,
-                           player_hand=session['player_hand'],
-                           dealers_shown_hand=session['dealers_shown_hand'],)
+                                title="Play",
+                                show_footer=False,
+                                active_hand=session['active_hand'],
+                                dealers_hand=session['dealers_hidden_hand'],
+                                player_hand=session['player_hand'],
+                                player_hand_values=sum(session['player_hand_values']))
+
 
 
 
@@ -275,6 +384,10 @@ def stats():
 @app.route('/about')
 def about():
     '''This route is for the about page, which provides information about the project.'''
+    if session.get("logged_in"):
+        if session.get('active_hand'):
+            flash("You need to finish your current hand before you can access the dashboard")
+            return redirect('/play')
     return render_template("about.html",
                            title="About")
 
@@ -283,7 +396,11 @@ def about():
 def login():
     '''This route is for the login page, which allows users to log in to their accounts.'''
     if session.get("logged_in"):
-        return redirect("/dashboard")
+        if session.get('active_hand'):
+            flash("You need to finish your current hand before you can access the dashboard")
+            return redirect('/play')
+        else:
+            return redirect("/dashboard")
     username = request.form.get('username')
     password = request.form.get('password')
     if username is not None:
@@ -321,7 +438,12 @@ def signup():
     '''This route is for the signup page, which allows users to create a new account.'''
     # if user is logged in, redirect to dashboard
     if session.get("logged_in"):
-        return redirect("/dashboard")
+        if session.get('active_hand'):
+            flash("You need to finish your current hand before you can access the dashboard")
+            return redirect('/play')
+        else:
+            return redirect("/dashboard")
+        
     if request.method == 'POST':
         username = request.form['username'].rstrip()
         password = request.form['password'].rstrip()
@@ -348,7 +470,6 @@ def signup():
             flash("Your password must be between 6~15 characters")
             return render_template("signup.html", title="Sign up")
         elif password.isalpha():
-            print(password.isalpha())
             flash("Your password must have a number or special character")
             return render_template("signup.html", title="Sign up")
         db = sqlite3.connect(DATABASE)
@@ -389,7 +510,13 @@ def signup():
 @app.route('/settings')
 def settings():
     '''This route is for the settings page, which allows users to change their account settings.'''
-    if not session.get("logged_in"):
+    if session.get("logged_in"):
+        if session.get('active_hand'):
+            flash("You need to finish your current hand before you can access the dashboard")
+            return redirect('/play')
+        else:
+            return redirect("/dashboard")
+    elif not session.get("logged_in"):
         return render_template("not_logged_in.html",
                                title="Settings")
     return render_template("settings.html",
