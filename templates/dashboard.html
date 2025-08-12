@@ -32,6 +32,7 @@
     </a>
 </div>
 
+<!-- Stats Table start -->
 <div class="stats">
   {% if stats_data %}
   <table class="player_stats_table">
@@ -72,7 +73,8 @@
       <th>Hands Lost:</th>
       <td>{{stats_data['losses']}}</td>
     </tr>
-
+    
+    {# Calculating win/loss ratio #}
     {% if stats_data['hands_played'] == 0 %}
       {% set hands_win_loss_ratio = 0 %}
     {% else %}
@@ -95,13 +97,15 @@
       <th>Money Lost:</th>
       <td>${{stats_data['money_losses']}}</td>
     </tr>
-
+    
+    {# Calculating netprofit #}
     {% set net_profit = stats_data['money_wins'] - stats_data['money_losses'] %}
     <tr>
       <th>Net Profit</th>
       <td>${{net_profit}}</td>
     </tr>
-
+    
+    {# Calculating money win/loss ratio #}
     {% if stats_data['money_wins'] == 0 %}
       {% set money_win_loss_ratio = 0 %}
     {% else %}
@@ -142,7 +146,9 @@
       <td>${{stats_data['money']}}</td>
     </tr>
   </table>
-  
+<!-- Stats table end -->
+
+<!-- Awards table start -->
   <table class="awards_table">
     <tr>
       <th colspan="3" class="awards_table_title" style="height: fit-content;">
@@ -158,6 +164,7 @@
     {% endfor %}
 
   </table>
+<!-- Awards Table end -->
   {% endif %}
 </div>
 {% endblock %}

@@ -29,6 +29,23 @@
     <br>
     {{player_hand_values}}
 </div>
+
+<table class="blackjack">
+  <tr class="dealers_hand">
+    <td class="cards"></td>
+  </tr>
+  <tr class="players_hand">
+
+      {% for card in player_hand %}
+        <td class="cards">
+          <img class="award_img" src="{{ url_for('static', filename='images/cards/' ~ card ~ '.png') }}" alt="{{card}}">
+        </td>
+      {% endfor %}
+
+  </tr>
+</table>
+
+
   <div class="action_buttons">
 {% if active_hand %}
 
