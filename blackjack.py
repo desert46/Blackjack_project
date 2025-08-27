@@ -1,26 +1,19 @@
 '''Project Start 18/03/2025'''
+# Imports
 from flask import Flask, render_template, request, flash, session, redirect
 from flask_session import Session
 import sqlite3
 import random
+import math
+# Constants
 DATABASE = "blackjack.db"
 
-
+# flask
 app = Flask(__name__)
-# flask_session stuff
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 app.secret_key = 'LETS GO GAMBLING!!! AW DANG IT!!'
 Session(app)
-
-
-# SQL Query Functions Start
-
-
-
-
-
-# SQL Query Functions End
 
 
 @app.context_processor
@@ -52,26 +45,63 @@ def dashboard():
     elif session.get('active_hand'):
         flash("Please finish your active hand")
         return redirect('/play')
+
     user_id = session.get("user_id")
     username = session.get("username")
-    db = sqlite3.connect(DATABASE)
-    db.row_factory = sqlite3.Row
-    cursor = db.cursor()
-    # finding duplicate usernames
-    sql = "SELECT * FROM Player WHERE id = ?"
-    cursor.execute(sql, (user_id,))
-    stats_data = cursor.fetchone()
-    sql = '''SELECT name, description, image FROM Award WHERE id IN(
-    SELECT aid FROM PlayerAward WHERE pid=?);'''
-    cursor.execute(sql, (user_id,))
-    awards = [dict(row) for row in cursor.fetchall()]
-    db.close()
-    return render_template("dashboard.html",
-                           title="Dashboard",
-                           user_id=user_id,
-                           username=username,
-                           stats_data=stats_data,
-                           awards=awards,)
+
+    with sqlite3.connect(DATABASE) as db:
+        db.row_factory = sqlite3.Row
+        cursor = db.cursor()
+        # Fetch player stats and awards
+        sql = "SELECT * FROM Player WHERE id = ?"
+        cursor.execute(sql, (user_id,))
+        stats_data = cursor.fetchone()
+        sql = '''SELECT name, description, image FROM Award WHERE id IN(
+        SELECT aid FROM PlayerAward WHERE pid=?);'''
+        cursor.execute(sql, (user_id,))
+        awards = [dict(row) for row in cursor.fetchall()]
+
+        # Leveling up
+        if stats_data['xp'] >= 100:
+            sql = '''UPDATE Player SET xp = xp - 100, level = level + 1
+            WHERE id = ?'''
+            cursor.execute(sql, (user_id,))
+            db.commit()
+
+        # Fetch awards to check if player already has a given award
+        sql = '''SELECT aid FROM PlayerAward WHERE pid = ?'''
+        cursor.execute(sql, (user_id,))
+        # results are put in a list of dictionaries
+        claimed_awards = [dict(row) for row in cursor.fetchall()]
+        print(claimed_awards)
+        # Claiming awards
+        # Level up awards
+        leveling_criteria = [50, 25, 10]
+        level_awards_aid = [7, 6, 5]
+        print(stats_data['level'])
+        for i in range(len(leveling_criteria)):
+            if stats_data['level'] >= leveling_criteria[i]:
+                # checking if player already has the award
+                has_award = any(pid.get('aid') == level_awards_aid[i] for pid in claimed_awards)
+                if not has_award:
+                    # Award the player
+                    sql = '''UPDATE Player
+                            SET award_count = award_count + 1
+                            WHERE id = ?;'''
+                    cursor.execute(sql, (user_id,))
+
+                    sql = '''INSERT INTO PlayerAward (pid, aid)
+                            VALUES (?, ?)'''
+                    cursor.execute(sql, (user_id, level_awards_aid[i]))
+
+    db.commit()
+    return render_template(
+        "dashboard.html",
+        title="Dashboard",
+        user_id=user_id,
+        username=username,
+        stats_data=stats_data,
+        awards=awards,)
 
 
 # game stuff start
@@ -95,7 +125,7 @@ def new_deck():
         'As', 'Ah', 'Ad', 'Ac'
     ]
     _shoe = cards*6  # forms a 6 deck blackjack shoe
-    random.shuffle(_shoe)  # shuffle shoe
+    random.shuffle(_shoe)
     return _shoe
 
 
@@ -113,6 +143,7 @@ def update_stats(stats, increase_stats, increase_xp, multiplier, cursor):
     '''SQL statement to update stats as the player plays Blackjack.'''
     user_id = session['user_id']
     stats = list(stats)
+    # Updating stat(s)
     increase_stats = list(increase_stats)
     for i in range(len(stats)):
         sql = f'''UPDATE Player SET {stats[i]} = {stats[i]} + ? WHERE id = ?'''
@@ -120,22 +151,9 @@ def update_stats(stats, increase_stats, increase_xp, multiplier, cursor):
     # Adding XP
     sql = '''UPDATE Player SET xp = xp + ? WHERE id = ?'''
     cursor.execute(sql, (increase_xp, user_id))
-    # Updating level
-    sql = '''SELECT level FROM Player WHERE id = ?'''
-    cursor.execute(sql, (user_id,))
-    result = cursor.fetchone()
-    session['level'] = result[0]
-    if session['level'] / 100 >= 1:
-        session['level'] += 1
-        sql = '''UPDATE Player SET level = level + 1 WHERE id = ?'''
-        cursor.execute(sql, (session['user_id']))
-        # removing xp
-        sql = '''UPDATE Player SET xp = xp - 100 WHERE id = ?'''
-        cursor.execute(sql, (session['user_id']))
-
     # winnings
-    # Undoing the change to money loss
     if multiplier != 0:
+        # Undoing the change to money loss
         sql = '''UPDATE Player SET money_losses = money_losses - ? WHERE id = ?'''
         cursor.execute(sql, (session['bet'], user_id))
         # Updating money_win only if it's not a push
@@ -216,7 +234,6 @@ def bet():
             cursor = db.cursor()
             sql = '''UPDATE Player SET money = ? WHERE id = ?'''
             cursor.execute(sql, (session['money'], session['user_id']))
-            # Update stats using the same connection
             update_stats(['money_losses', 'hands_played'], [session['bet'], 1], 1, 0, cursor)
 
         # Start the hand
@@ -232,7 +249,9 @@ def bet():
                                           cursor)
         return redirect('/play')
 
-    return render_template("bet.html", title="Play", show_footer=False, money=session['money'])
+    return render_template("bet.html", title="Play",
+                           show_footer=False,
+                           money=session['money'])
 
 
 @app.route('/play')
@@ -243,7 +262,6 @@ def play():
     if session.get('active_hand'):
         if session.get('natural'):
             session['active_hand'] = False
-            flash('Natural')
             return hand_end_template()
         else:
             return render_template(
@@ -341,9 +359,6 @@ def hit():
                                     session['card_values'],
                                     hand=session['player_hand'],
                                     hand_values=session['player_hand_values'])
-    flash(f"You drew: {session['player_hand'][-1]}")
-    flash(f"Your Hand: {session['player_hand']}")
-    flash(f"Your Hand Value: {sum(session['player_hand_values'])}")
     if sum(session['player_hand_values']) > 21:
         flash("You busted")
         flash(f"You lost your bet of ${session['bet']}")
@@ -362,13 +377,9 @@ def stand():
             return redirect('play')
     else:
         return render_template('not_logged_in.html')
-
-    flash("You chose to stand.")
     with sqlite3.connect(DATABASE) as db:
         cursor = db.cursor()
         update_stats(['stands',], [1,], 2, 0, cursor)
-
-    flash(f"Dealer's Hand was: {session['dealers_hidden_hand']}")
     while sum(session['dealer_hand_values']) < 17:
         session['dealers_hidden_hand'].append(session['shoe'][0])
         session['shoe'].pop(0)
@@ -379,9 +390,6 @@ def stand():
             hand=session['dealers_hidden_hand'],
             hand_values=session['dealer_hand_values']
         )
-        flash(f"Dealer drew: {session['dealers_hidden_hand'][-1]}")
-    flash(f"Dealer's Hand: {session['dealers_hidden_hand']}")
-    flash(f"Dealer's Hand Value: {sum(session['dealer_hand_values'])}")
     if sum(session['dealer_hand_values']) > 21:
         flash("Dealer went bust.")
         flash(f"You won ${session['bet'] * 2}!")
@@ -410,7 +418,7 @@ def stand():
         flash(f"You get your bet of ${session['bet']} back.")
         with sqlite3.connect(DATABASE) as db:
             cursor = db.cursor()
-            update_stats(['pushes',], ['1',], 3, 1)
+            update_stats(['pushes',], ['1',], 3, 1, cursor)
 
         return hand_end_template()
 # game stuff end
