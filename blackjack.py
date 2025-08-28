@@ -4,7 +4,6 @@ from flask import Flask, render_template, request, flash, session, redirect
 from flask_session import Session
 import sqlite3
 import random
-import math
 # Constants
 DATABASE = "blackjack.db"
 
@@ -22,6 +21,23 @@ def inject_variables():
     return dict(logged_in=session.get("logged_in"),
                 show_footer=True,
                 user_id=session.get('user_id'))
+
+
+def awarding_player(claimed_awards, cursor, user_id, criteria, aid, stat):
+    for i in range(len(criteria)):
+        if stat >= criteria[i]:
+            # checking if player already has the award
+            has_award = any(pid.get('aid') == aid[i] for pid in claimed_awards)
+            if not has_award:
+                # Award the player
+                sql = '''UPDATE Player
+                        SET award_count = award_count + 1
+                        WHERE id = ?;'''
+                cursor.execute(sql, (user_id,))
+
+                sql = '''INSERT INTO PlayerAward (pid, aid)
+                        VALUES (?, ?)'''
+                cursor.execute(sql, (user_id, aid[i]))
 
 
 @app.route('/')  # link with and without the /home will lead home
@@ -74,25 +90,25 @@ def dashboard():
         # results are put in a list of dictionaries
         claimed_awards = [dict(row) for row in cursor.fetchall()]
         print(claimed_awards)
+
         # Claiming awards
         # Level up awards
-        leveling_criteria = [50, 25, 10]
-        level_awards_aid = [7, 6, 5]
-        print(stats_data['level'])
-        for i in range(len(leveling_criteria)):
-            if stats_data['level'] >= leveling_criteria[i]:
-                # checking if player already has the award
-                has_award = any(pid.get('aid') == level_awards_aid[i] for pid in claimed_awards)
-                if not has_award:
-                    # Award the player
-                    sql = '''UPDATE Player
-                            SET award_count = award_count + 1
-                            WHERE id = ?;'''
-                    cursor.execute(sql, (user_id,))
+        awarding_player(claimed_awards=claimed_awards,
+                        cursor=cursor,
+                        user_id=user_id,
+                        criteria=[50, 25, 10],
+                        aid=[7, 6, 5],
+                        stat=stats_data['level']
+                        )
 
-                    sql = '''INSERT INTO PlayerAward (pid, aid)
-                            VALUES (?, ?)'''
-                    cursor.execute(sql, (user_id, level_awards_aid[i]))
+        # awarding money won awards
+        awarding_player(claimed_awards=claimed_awards,
+                        cursor=cursor,
+                        user_id=user_id,
+                        criteria=[1000000, 500000, 100000],
+                        aid=[4, 3, 2],
+                        stat=stats_data['money_wins']
+                        )
 
     db.commit()
     return render_template(
@@ -598,10 +614,17 @@ def logout():
     return redirect('/login')
 
 
+# Error handlers
 @app.errorhandler(404)
 def page_not_found(e):
     '''custom 404 page not found page'''
     return render_template("404.html", title="Page Not Found"), 404
+
+
+@app.errorhandler(500)
+def error_500(e):
+    '''custom error 500 page'''
+    render_template("500.html", title="Error 500"), 500
 
 
 if __name__ == "__main__":
