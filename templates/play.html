@@ -9,6 +9,9 @@
   <table class="hands">
 
     <tr class="dealers_hand">
+      <tr class="hand_headings">
+        <td>Dealers Hand</td>
+      </tr>
           <td class="cards">
             {% for card in dealers_hand %}
             <img class="card" src="{{ url_for('static', filename='images/cards/' ~ card ~ '.png') }}" alt="{{card}}">
@@ -18,6 +21,9 @@
   </table>
 
   <table>
+    <tr class="hand_headings">
+      <td>Your hand ({{player_hand_values}})</td>
+    </tr>
     <tr class="players_hand">
           <td class="cards">
             {% for card in player_hand %}

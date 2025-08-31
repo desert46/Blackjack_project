@@ -6,22 +6,19 @@
 </h1>
 
 <form method="post" action="/bet">
-    <table class="login_signup_form">
-        <tr>
-            <td>Please enter your bet size</td>
+    <table class="betting_form">
+        <tr class="betting_money">
+            <td>You have: ${{money}}</td>
         </tr>
-        <tr>
-            <td>You have ${{money}}</td>
-        </tr>
-        <tr>
+        <tr class="betting_min_bet">
             <td>Minumum bet is $10</td>
         </tr>
         <tr>           
-            <td>
+            <td class="betting_bar">
                 <input type="number" name="bet" required>
             </td>
         </tr>
-        <tr>
+        <tr class="bet_submit_button">
             <td><input type="submit" value="Bet"></td>
         </tr>
     </table>

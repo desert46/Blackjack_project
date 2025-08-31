@@ -95,6 +95,7 @@ footer{
     margin-left: 9px;
 }
 /* Navigation bar style end */
+
 /* Login and Signup Page style start */
 .login_signup_form{
     align-items: center;
@@ -155,6 +156,7 @@ footer{
     margin-top: 5px;
 }
 /* Login and Signup Page style end */
+
 /* Hero Image style start */
 .hero_image{
     background-image: url("../images/hero_image.PNG");
@@ -335,6 +337,7 @@ footer{
     margin-bottom: 0;
 }
 /* Player Stats and Dashboard Page Style end */
+
 /* Error Page Style start */
 .error_page_background {
     background-image: url("../images/error_background.jpg");
@@ -366,6 +369,65 @@ footer{
     color: #ff3131;
 }
 /* Error Page Style end */
+
+/* Betting Page style start */
+.betting_form{
+    justify-content: center;
+    display: flex;
+    align-content: center;
+}
+.betting_money{
+    font-size: 25px;
+    font-weight: bold;
+    color: white;
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+}
+.betting_min_bet{
+    font-weight: bold;
+    color: #ff3131;
+    display: flex;
+    justify-content: center;
+}
+.betting_bar{
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-left: 5%;
+}
+.betting_bar input{
+    width: 100%;
+    padding: 10px;
+    border-radius: 50px;
+    border: 2px solid #ff3131;
+    font-size: 1.2rem;
+    color: #000000;
+    text-align: center;
+}
+.bet_submit_button{
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    margin: 0;
+}
+.bet_submit_button input{
+    background-color: #ff3131;
+    color: #FFFFFF;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+}
+.bet_submit_button input:hover{
+    background-color: #ffffff;
+    color: #000000;
+}
+/* Betting Page style end */
+
 /* Play Page style start */
 .blackjack_table {
     display: flex;
@@ -381,6 +443,11 @@ footer{
     justify-content: center;
     display: flex;
 }
+.hand_headings{
+    color: white;
+    font-weight: bold;
+    text-align: center;
+}
 .cards {
     display: flex;
     padding: 0;
@@ -392,7 +459,7 @@ footer{
 }
 .action_buttons {
     justify-content: center;
-    padding: 50px;
+    padding: 20px;
     display: flex;
 }
 .action_buttons a {

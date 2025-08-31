@@ -56,6 +56,7 @@ def home():
 @app.route('/dashboard')
 def dashboard():
     '''This route is for the dashboard page.'''
+    # User must be logged in and not in a hand
     if not session.get("logged_in"):
         return redirect('/home')
     elif session.get('active_hand'):
@@ -89,7 +90,6 @@ def dashboard():
         cursor.execute(sql, (user_id,))
         # results are put in a list of dictionaries
         claimed_awards = [dict(row) for row in cursor.fetchall()]
-        print(claimed_awards)
 
         # Claiming awards
         # Level up awards
@@ -132,6 +132,7 @@ def calculate_hand_value(card_values, hand_values, hand):
 
 
 def new_deck():
+    '''Creates a shuffled, 6 deck blackjack shoe'''
     # 2s represents 2 of spades, Ah represents Ace of Hearts, etc.
     cards = [
         '2s', '3s', '4s', '5s', '6s', '7s', '8s', '9s', 'Ts', 'Js', 'Qs', 'Ks',
@@ -183,6 +184,7 @@ def update_stats(stats, increase_stats, increase_xp, multiplier, cursor):
 
 
 def hand_end_template():
+    '''Function for rendering the template after a hand has ended'''
     session['active_hand'] = False
     return render_template(
                 "play.html",
@@ -200,7 +202,8 @@ def bet():
     '''The betting page before the game starts'''
     # User needs to be logged in and in a hand
     if not session.get('logged_in'):
-        return render_template("not_logged_in.html")
+        return render_template("not_logged_in.html",
+                               title="You are not logged in")
     if session.get('active_hand'):
         flash("Please finish your active hand")
         return redirect('/play')
@@ -272,11 +275,14 @@ def bet():
 
 @app.route('/play')
 def play():
-    '''The actual game'''
+    '''Route for the game after the bet has been placed'''
+    # User must be logged in and in a hand
     if not session.get('logged_in'):
-        return render_template("not_logged_in.html")
+        return render_template("not_logged_in.html",
+                               title="You are not logged in")
     if session.get('active_hand'):
         if session.get('natural'):
+            # immediately ends the hand if there is a natural
             session['active_hand'] = False
             return hand_end_template()
         else:
@@ -355,11 +361,13 @@ def hand_start(bet, shoe, card_values, cursor):
 @app.route('/hit')
 def hit():
     '''Player chooses to hit in Blackjack'''
+    # Player must be logged in
     if session.get('logged_in'):
         if not session['active_hand']:
             return redirect('play')
     else:
-        return render_template('not_logged_in.html')
+        return render_template('not_logged_in.html',
+                               title="You are not logged in")
     # Players can only double down on the first move
     session['can_double_down'] = False
     with sqlite3.connect(DATABASE) as db:
@@ -388,11 +396,13 @@ def hit():
 
 @app.route('/stand')
 def stand():
+    # user must be logged in and in a hand
     if session.get('logged_in'):
         if not session['active_hand']:
             return redirect('play')
     else:
-        return render_template('not_logged_in.html')
+        return render_template('not_logged_in.html',
+                               title="You are not logged in")
     with sqlite3.connect(DATABASE) as db:
         cursor = db.cursor()
         update_stats(['stands',], [1,], 2, 0, cursor)
@@ -446,6 +456,7 @@ def stats():
     This route is for the stats page,
     which allows users to search for player stats by ID.
     '''
+    # Player bust be logged out or not in a hand
     if session.get('active_hand'):
         flash("You need to finish your current hand")
         return redirect('/play')
@@ -475,8 +486,9 @@ def stats():
 @app.route('/about')
 def about():
     '''This route is for the about page, which provides information about the project.'''
+    # User must not be in a hand
     if session.get('active_hand'):
-        flash("You need to finish your current hand before you can access the dashboard")
+        flash("You need to finish your current hand")
         return redirect('/play')
     return render_template("about.html",
                            title="About")
@@ -617,13 +629,13 @@ def logout():
 # Error handlers
 @app.errorhandler(404)
 def page_not_found(e):
-    '''custom 404 page not found page'''
+    '''Custom 404 page not found page'''
     return render_template("404.html", title="Page Not Found"), 404
 
 
 @app.errorhandler(500)
 def error_500(e):
-    '''custom error 500 page'''
+    '''Custom error 500 page'''
     render_template("500.html", title="Error 500"), 500
 
 
