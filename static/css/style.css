@@ -157,6 +157,7 @@ footer{
 }
 /* Login and Signup Page style end */
 
+/* Home page Style start */
 /* Hero Image style start */
 .hero_image{
     background-image: url("../images/hero_image.PNG");
@@ -178,7 +179,6 @@ footer{
     font-size: 2rem;
     font-weight: bold;
 }
-
 .signup_hero_button a{
     font-weight: bold;
     background-color: #ff3131;
@@ -195,7 +195,7 @@ footer{
 }
 /* Hero Image Style end */
 
-/* Home page Style start */
+
 .home_row{
     color: #FFFFFF;
     border-bottom: 5px solid white;
@@ -203,6 +203,16 @@ footer{
     grid-template-columns: 1fr 1fr;
     gap: 10%;
     padding: 2.5% 10%;
+}
+.home_title{
+
+}
+.home_text{
+    
+}
+.home_image{
+    width: 80%;
+    border-radius: 50px;
 }
 /* Home page Style end */
 

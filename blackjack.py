@@ -4,6 +4,7 @@ from flask import Flask, render_template, request, flash, session, redirect
 from flask_session import Session
 import sqlite3
 import random
+
 # Constants
 DATABASE = "blackjack.db"
 
@@ -15,6 +16,7 @@ app.secret_key = 'LETS GO GAMBLING!!! AW DANG IT!!'
 Session(app)
 
 
+# Routes and functions
 @app.context_processor
 def inject_variables():
     '''This function injects these variable into every route'''
@@ -110,6 +112,20 @@ def dashboard():
                         stat=stats_data['money_wins']
                         )
 
+    # Calculating ratios for some stats
+    # Win/loss ratio calculations
+    if stats_data['wins']+stats_data['losses'] == 0:
+        # Preventing division by zero
+        hands_win_loss_ratio = 0
+    else:
+        hands_win_loss_ratio = stats_data['wins']/(stats_data['wins']+stats_data['losses'])
+    # Money/loss ratio calculations
+    if stats_data['money_wins'] == 0:
+        # Preventing division by zero
+        money_loss_ratio = 0
+    else:
+        money_loss_ratio = stats_data['money_wins']/stats_data['money_losses']
+
     db.commit()
     return render_template(
         "dashboard.html",
@@ -117,7 +133,9 @@ def dashboard():
         user_id=user_id,
         username=username,
         stats_data=stats_data,
-        awards=awards,)
+        awards=awards,
+        hands_win_loss_ratio=round(hands_win_loss_ratio, 3)*100,
+        money_loss_ratio=round(money_loss_ratio, 3)*100)
 
 
 # game stuff start
@@ -171,11 +189,13 @@ def update_stats(stats, increase_stats, increase_xp, multiplier, cursor):
     # winnings
     if multiplier != 0:
         # Undoing the change to money loss
-        sql = '''UPDATE Player SET money_losses = money_losses - ? WHERE id = ?'''
+        sql = '''UPDATE Player SET money_losses = money_losses - ?
+        WHERE id = ?'''
         cursor.execute(sql, (session['bet'], user_id))
         # Updating money_win only if it's not a push
         if sum(session['dealer_hand_values']) != sum(session['player_hand_values']):
-            sql = '''UPDATE Player SET money_wins = money_wins + ? WHERE id = ?'''
+            sql = '''UPDATE Player SET money_wins = money_wins + ?
+            WHERE id = ?'''
             cursor.execute(sql, (session['bet'], user_id))
         # Adding money to balance
         session['money'] += session['bet']*multiplier
@@ -203,7 +223,7 @@ def bet():
     # User needs to be logged in and in a hand
     if not session.get('logged_in'):
         return render_template("not_logged_in.html",
-                               title="You are not logged in")
+                               title="Play")
     if session.get('active_hand'):
         flash("Please finish your active hand")
         return redirect('/play')
@@ -279,7 +299,7 @@ def play():
     # User must be logged in and in a hand
     if not session.get('logged_in'):
         return render_template("not_logged_in.html",
-                               title="You are not logged in")
+                               title="Play")
     if session.get('active_hand'):
         if session.get('natural'):
             # immediately ends the hand if there is a natural
@@ -367,7 +387,7 @@ def hit():
             return redirect('play')
     else:
         return render_template('not_logged_in.html',
-                               title="You are not logged in")
+                               title="Play")
     # Players can only double down on the first move
     session['can_double_down'] = False
     with sqlite3.connect(DATABASE) as db:
@@ -461,25 +481,43 @@ def stats():
         flash("You need to finish your current hand")
         return redirect('/play')
     if request.method == 'POST':
-        searched_id = request.form['searched_id']
+        searched_username = request.form.get('searched_username')
         db = sqlite3.connect(DATABASE)
         db.row_factory = sqlite3.Row
         cursor = db.cursor()
         # finding duplicate usernames
-        sql = "SELECT * FROM Player WHERE id = ?"
-        cursor.execute(sql, (searched_id,))
+        sql = "SELECT * FROM Player WHERE username = ?"
+        cursor.execute(sql, (searched_username,))
         stats_data = cursor.fetchone()
         if stats_data is None:
             flash("No Player found with this ID")
-        sql = '''SELECT name, description, image FROM Award WHERE id IN(
-        SELECT aid FROM PlayerAward WHERE pid=?);'''
-        cursor.execute(sql, (searched_id,))
-        awards = [dict(row) for row in cursor.fetchall()]
-        db.close()
-        return render_template("stats.html", title="Stats",
-                               searched_id=searched_id,
-                               stats_data=stats_data,
-                               awards=awards,)
+        else:
+            sql = '''SELECT name, description, image FROM Award WHERE id IN(
+            SELECT aid FROM PlayerAward WHERE pid=?);'''
+            cursor.execute(sql, (stats_data['id'],))
+            awards = [dict(row) for row in cursor.fetchall()]
+
+            # Calculating ratios for some stats
+            # Win/loss ratio calculations
+            if stats_data['wins']+stats_data['losses'] == 0:
+                # Preventing division by zero
+                hands_win_loss_ratio = 0
+            else:
+                hands_win_loss_ratio = stats_data['wins']/(stats_data['wins']+stats_data['losses'])
+            # Money/loss ratio calculations
+            if stats_data['money_wins'] == 0:
+                # Preventing division by zero
+                money_loss_ratio = 0
+            else:
+                money_loss_ratio = stats_data['money_wins']/stats_data['money_losses']
+
+            db.close()
+            return render_template("stats.html",
+                                   title="Stats",
+                                   stats_data=stats_data,
+                                   awards=awards,
+                                   hands_win_loss_ratio=round(hands_win_loss_ratio, 3)*100,
+                                   money_loss_ratio=round(money_loss_ratio, 3)*100)
     return render_template("stats.html", title="Stats")
 
 
@@ -501,6 +539,7 @@ def login():
         if session.get('active_hand'):
             flash("You need to finish your current hand")
             return redirect('/play')
+        return redirect('/dashboard')
     username = request.form.get('username')
     password = request.form.get('password')
     if username is not None:
@@ -556,11 +595,11 @@ def signup():
             flash("Your username must not have a space")
             return render_template("signup.html", title="Sign up")
         elif "'" in username or '"' in username or ';' in username:
-            flash("Invalid username, please try again")
+            flash("Invalid characters in username, please try again")
         elif '/' in username or '\\' in username or '=' in username:
             flash("Invalid username, please try again")
         elif '<' in username or '>' in username:
-            flash("Invalid username, please try again")
+            flash("Invalid characters in username, please try again")
             return render_template("signup.html", title="Sign up")
 
         # Checking the password is valid
@@ -623,6 +662,7 @@ def logout():
     if not session.get("logged_in"):
         return redirect('/home')
     session.clear()
+    print("User has been logged out")
     return redirect('/login')
 
 

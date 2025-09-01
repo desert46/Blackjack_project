@@ -55,7 +55,7 @@
     </tr>
     <tr>
       <th>Level:</th>
-      <td>{{stats_data['Level']}}</td>
+      <td>{{stats_data['level']}}</td>
     </tr>
     <tr>
       <th>Award Count:</th>
@@ -73,17 +73,9 @@
       <th>Hands Lost:</th>
       <td>{{stats_data['losses']}}</td>
     </tr>
-    
-    {# Calculating win/loss ratio #}
-    {% if stats_data['hands_played'] == 0 %}
-      {% set hands_win_loss_ratio = 0 %}
-    {% else %}
-      {% set hands_win_loss_ratio = stats_data['wins'] / stats_data['hands_played'] %}
-    {% endif %}
-
     <tr>
       <th>Win/Loss Ratio:</th>
-      <td>{{hands_win_loss_ratio}}</td>
+      <td>{{hands_win_loss_ratio}}%</td>
     </tr>
     <tr>
       <th>Pushes:</th>
@@ -104,19 +96,10 @@
       <th>Net Profit</th>
       <td>${{net_profit}}</td>
     </tr>
-    
-    {# Calculating money win/loss ratio #}
-    {% if stats_data['money_wins'] == 0 %}
-      {% set money_win_loss_ratio = 0 %}
-    {% else %}
-      {% set money_win_loss_ratio = stats_data['money_wins'] / stats_data['money_losses'] %}
-    {% endif %}
-
     <tr>
       <th>Money Win/Loss Ratio:</th>
-      <td>{{money_win_loss_ratio}}</td>
+      <td>{{money_loss_ratio}}%</td>
     </tr>
-
     <tr>
       <th>Times Hits:</th>
       <td>{{stats_data['hits']}}</td>

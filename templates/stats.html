@@ -4,14 +4,14 @@
     Search Stats
 </h1>
 <h2 class="sub_heading">
-    Search by Player ID
+    Search by Username
 </h2>
 
 <div class="stats_search_form">
   <form method="post" action="/stats">
     <table>
         <tr class="stats_search_bar">
-          <td><input type="number" name="searched_id" maxlength="5" required></td>
+          <td><input type="text" name="searched_username" maxlength="15" required></td>
         </tr>
         <tr class="stats_submit_button">
             <td><input type="submit" value="Search"></td>
@@ -29,7 +29,6 @@
     </div>
   {% endif %}
 {% endwith %}
-
 
 <div class="stats">
   {% if stats_data %}
@@ -70,17 +69,10 @@
     <tr>
       <th>Hands Lost:</th>
       <td>{{stats_data['losses']}}</td>
-    </tr>
-
-    {% if stats_data['hands_played'] == 0 %}
-      {% set hands_win_loss_ratio = 0 %}
-    {% else %}
-      {% set hands_win_loss_ratio = stats_data['wins'] / stats_data['hands_played'] %}
-    {% endif %}
-    
+    </tr>    
     <tr>
       <th>Win/Loss Ratio:</th>
-      <td>{{hands_win_loss_ratio}}</td>
+      <td>{{hands_win_loss_ratio}}%</td>
     </tr>
 
     <tr>
@@ -101,18 +93,10 @@
       <th>Net Profit</th>
       <td>${{net_profit}}</td>
     </tr>
-
-    {% if stats_data['money_wins'] == 0 %}
-      {% set money_win_loss_ratio = 0 %}
-    {% else %}
-      {% set money_win_loss_ratio = stats_data['money_wins'] / stats_data['money_losses'] %}
-    {% endif %}
-
     <tr>
       <th>Money Win/Loss Ratio:</th>
-      <td>{{money_win_loss_ratio}}</td>
+      <td>{{money_loss_ratio}}%</td>
     </tr>
-
     <tr>
       <th>Times Hits:</th>
       <td>{{stats_data['hits']}}</td>
