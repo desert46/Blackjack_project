@@ -7,7 +7,6 @@ import random
 
 # Constants
 DATABASE = "blackjack.db"
-
 # flask
 app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = False
@@ -22,6 +21,7 @@ def inject_variables():
     '''This function injects these variable into every route'''
     return dict(logged_in=session.get("logged_in"),
                 show_footer=True,
+                username=session.get('username'),
                 user_id=session.get('user_id'))
 
 
@@ -31,7 +31,7 @@ def awarding_player(claimed_awards, cursor, user_id, criteria, aid, stat):
             # checking if player already has the award
             has_award = any(pid.get('aid') == aid[i] for pid in claimed_awards)
             if not has_award:
-                # Award the player
+                # Awarding the player with the designated award
                 sql = '''UPDATE Player
                         SET award_count = award_count + 1
                         WHERE id = ?;'''
@@ -81,7 +81,8 @@ def dashboard():
         awards = [dict(row) for row in cursor.fetchall()]
 
         # Leveling up
-        if stats_data['xp'] >= 100:
+        if stats_data['xp'] >= 100:  # Player levels up every 100xp
+            # xp is deducted and level is increased by 1
             sql = '''UPDATE Player SET xp = xp - 100, level = level + 1
             WHERE id = ?'''
             cursor.execute(sql, (user_id,))
@@ -134,7 +135,7 @@ def dashboard():
         username=username,
         stats_data=stats_data,
         awards=awards,
-        hands_win_loss_ratio=round(hands_win_loss_ratio, 3)*100,
+        hands_win_loss_ratio=round(hands_win_loss_ratio, 2)*100,
         money_loss_ratio=round(money_loss_ratio, 3)*100)
 
 
@@ -175,7 +176,9 @@ def create_card_values():
 
 
 def update_stats(stats, increase_stats, increase_xp, multiplier, cursor):
-    '''SQL statement to update stats as the player plays Blackjack.'''
+    '''SQL statement to update stats as the player plays Blackjack.
+    This function has 5 parameters
+    '''
     user_id = session['user_id']
     stats = list(stats)
     # Updating stat(s)
@@ -490,7 +493,7 @@ def stats():
         cursor.execute(sql, (searched_username,))
         stats_data = cursor.fetchone()
         if stats_data is None:
-            flash("No Player found with this ID")
+            flash("No Player found with this exact username")
         else:
             sql = '''SELECT name, description, image FROM Award WHERE id IN(
             SELECT aid FROM PlayerAward WHERE pid=?);'''
@@ -516,8 +519,9 @@ def stats():
                                    title="Stats",
                                    stats_data=stats_data,
                                    awards=awards,
-                                   hands_win_loss_ratio=round(hands_win_loss_ratio, 3)*100,
-                                   money_loss_ratio=round(money_loss_ratio, 3)*100)
+                                   hands_win_loss_ratio=round(hands_win_loss_ratio*100, 1),
+                                   money_loss_ratio=round(money_loss_ratio*100, 1),
+                                   )
     return render_template("stats.html", title="Stats")
 
 
@@ -534,7 +538,8 @@ def about():
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
-    '''This route is for the login page, which allows users to log in to their accounts.'''
+    '''This route is for the login page, which allows users to
+    log in to their accounts.'''
     if session.get("logged_in"):
         if session.get('active_hand'):
             flash("You need to finish your current hand")
@@ -574,7 +579,8 @@ def login():
 
 @app.route('/signup', methods=['POST', 'GET'])
 def signup():
-    '''This route is for the signup page, which allows users to create a new account.'''
+    '''This route is for the signup page, which allows users to
+    create a new account.'''
     # if user is logged in, redirect to dashboard
     if session.get("logged_in"):
         if session.get('active_hand'):
@@ -585,11 +591,10 @@ def signup():
         username = request.form['username'].rstrip()
         password = request.form['password'].rstrip()
         # Checking the username is valid
+        # The code below ensures the username is between 4-15 characters
+        # Some special characters also cannot be used
         if len(username) < 4 or len(username) > 15:
             flash("Your username must be between 5~15 characters")
-            return render_template("signup.html", title="Sign up")
-        elif username.isdigit():
-            flash("Your username must have a letter")
             return render_template("signup.html", title="Sign up")
         elif ' ' in username:
             flash("Your username must not have a space")

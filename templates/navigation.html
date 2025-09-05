@@ -1,13 +1,17 @@
 <div class="navigation_bar">
     <div class="navigation_links">
-        <a href="home">Home</a>
-        <a href="play">Play</a>
-        <a href="stats">Stats</a>
-        <a href="about">About</a>
+        <a href="/home">Home</a>
+        <a href="/play">Play</a>
+        <a href="/stats">Stats</a>
+        <a href="/about">About</a>
     </div>
 
     {% if logged_in %}
     <div class="navigation_buttons">
+        <div class="player_tag">
+            <a href="/dashboard">{{username}} [{{user_id}}]</a>
+            
+        </div>
         <div class="signlog">
             <a href="log_out">Log Out</a>
         </div>
@@ -17,9 +21,8 @@
     </div>
     {% else %}
     <div class="signlog">
-        <a href="login">Login</a>
-        <a href="signup">Signup</a>
+        <a href="/login">Login</a>
+        <a href="/signup">Signup</a>
     </div>
     {% endif %}
-    
 </div>

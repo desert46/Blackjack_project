@@ -1,25 +1,26 @@
 {% extends "layout.html" %}
 {% block content %}
-<h1 class="title player_stats_title">
-    Search Stats
-</h1>
-<h2 class="sub_heading">
-    Search by Username
-</h2>
+<div class="stats_section">
+  <h1 class="title player_stats_title">
+      Search Stats
+  </h1>
+  <h2 class="sub_heading">
+      Search by Username
+  </h2>
 
-<div class="stats_search_form">
-  <form method="post" action="/stats">
-    <table>
-        <tr class="stats_search_bar">
-          <td><input type="text" name="searched_username" maxlength="15" required></td>
-        </tr>
-        <tr class="stats_submit_button">
-            <td><input type="submit" value="Search"></td>
-        </tr>
-    </table>
-  </form>
+  <div class="stats_search_form">
+    <form method="post" action="/stats">
+
+          <div class="stats_search_bar">
+            <div><input type="text" name="searched_username" maxlength="15" required></td>
+          </div>
+          <div class="stats_submit_button">
+              <td><input type="submit" value="Search"></td>
+          </div>
+
+    </form>
+  </div>
 </div>
-
 {% with messages = get_flashed_messages() %}
   {% if messages %}
     <div class=flashes>

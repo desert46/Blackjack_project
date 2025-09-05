@@ -1,28 +1,26 @@
 {% extends "layout.html" %}
 {% block content %}
-
-<h1 class="title">
-    Enter your bet size
-</h1>
-
-<form method="post" action="/bet">
-    <table class="betting_form">
-        <tr class="betting_money">
-            <td>You have: ${{money}}</td>
-        </tr>
-        <tr class="betting_min_bet">
-            <td>Minumum bet is $10</td>
-        </tr>
-        <tr>           
-            <td class="betting_bar">
-                <input type="number" name="bet" required>
-            </td>
-        </tr>
-        <tr class="bet_submit_button">
-            <td><input type="submit" value="Bet"></td>
-        </tr>
-    </table>
-</form>
+<div class="betting_section">
+    <h1 class="title">
+        Enter your bet size
+    </h1>
+    <form method="post" action="/bet">
+        <div class="betting_form">
+            <div class="betting_money">
+                <div>You have: ${{money}}</td>
+            </div>
+            <div class="betting_min_bet">
+                <div>Minumum bet is $10</td>
+            </div>
+                <div class="betting_bar">
+                    <input type="number" name="bet" required>
+                </div>
+            <div class="bet_submit_button">
+                <td><input type="submit" value="Bet"></td>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- Flashes -->
 {% with messages = get_flashed_messages() %}
   {% if messages %}
