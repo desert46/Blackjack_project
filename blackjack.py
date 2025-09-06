@@ -477,7 +477,7 @@ def stand():
 def stats():
     '''
     This route is for the stats page,
-    which allows users to search for player stats by ID.
+    which allows users to search for player stats by username.
     '''
     # Player bust be logged out or not in a hand
     if session.get('active_hand'):
@@ -647,7 +647,7 @@ def signup():
                            title="Sign Up")
 
 
-@app.route('/settings')
+@app.route('/settings', methods=['POST', 'GET'])
 def settings():
     '''This route is for the settings page, which allows users to change their account settings.'''
     if session.get("logged_in"):
@@ -657,8 +657,78 @@ def settings():
     elif not session.get("logged_in"):
         return render_template("not_logged_in.html",
                                title="Settings")
+
+    if request.method == 'POST':
+        new_password = request.form['new_password']
+        old_password = request.form['old_password']
+        user_id = session.get('user_id')
+        # Password must be 6~15 characters and contain a
+        # number/special character
+        if len(new_password) < 6 or len(new_password) > 15:
+            flash("Your password must be between 6~15 characters")
+            return render_template("signup.html", title="Sign up")
+        elif new_password.isalpha():
+            flash("Your password must have a number or special character")
+            return render_template("signup.html", title="Sign up")
+        with sqlite3.connect(DATABASE) as db:
+            cursor = db.cursor()
+            sql = '''SELECT password FROM Player WHERE id = ?'''
+            cursor.execute(sql, (user_id,))
+            password = cursor.fetchone()
+            password = password[0]
+        if old_password != password:
+            print(password)
+            print(old_password)
+            flash('Incorrect password')
+        else:
+            sql = '''UPDATE Player SET password = ? WHERE id = ?'''
+            cursor.execute(sql, (new_password, user_id,))
+            db.commit()
+            flash('Password updated successfully')
+
     return render_template("settings.html",
                            title="Settings")
+
+
+@app.route('/delete_account', methods=['POST', 'GET'])
+def delete_account():
+    '''This route is for a page where the user can delete their account.
+    They will have to confirm it's deletion by inputting their password and
+    checking a box'''
+    if session.get("logged_in"):
+        if session.get('active_hand'):
+            flash("You need to finish your current hand")
+            return redirect('/play')
+    elif not session.get("logged_in"):
+        return render_template("not_logged_in.html",
+                               title="Delete Account")
+    if request.method == 'POST':
+        with sqlite3.connect(DATABASE) as db:
+            user_id = session.get('user_id')
+            print(user_id)
+            cursor = db.cursor()
+            sql = '''SELECT password FROM Player WHERE id = ?'''
+            cursor.execute(sql, (user_id,))
+            password = cursor.fetchone()
+            password = password[0]
+            input_password = request.form['password']
+            checkbox = request.form.get('delete_account_checkbox')
+            if checkbox == 'Checked':
+                if input_password == password:
+                    sql = '''DELETE FROM Player WHERE id = ?'''
+                    cursor.execute(sql, (user_id,))
+                    session.clear()
+                    db.commit()
+                    return redirect('/home')
+
+                else:
+                    flash('Password is incorrect')
+            else:
+                flash('Please check the box to delete your account')
+
+    return render_template('delete_account.html',
+                           title='Delete Account',
+                           show_footer=False)
 
 
 @app.route('/log_out')

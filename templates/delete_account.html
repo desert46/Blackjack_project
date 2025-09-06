@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+{% block content %}
+<h1 class="title">
+    Delete Account
+</h1>
+<div class="delete_account">
+    
+    <form method="post" action="/delete_account">
+        <h3 class="delete_account_subtitles">Enter your previous password:</h3>
+        <div class="delete_account_bar">
+            <input type="text" name="password" minlength="5" 
+            maxlength="15" placeholder="Enter your old password" required>
+        </div>
+        <div class="delete_account_checkbox">
+            <input type="checkbox" value="Checked" id="delete_account" 
+            name="delete_account_checkbox">
+            <label for="delete_account">I want to delete my account 
+                and acknowledge that this action cannot be undone</label>
+        </div>
+        <div class="delete_account_submit_button">
+            <div>
+                <input type="submit" value="Confirm" >
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Flashes -->
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class=flashes>
+      {% for message in messages %}
+        <div>
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+{% endblock %}

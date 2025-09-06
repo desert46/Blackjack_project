@@ -3,6 +3,7 @@ body{
     font-family: "Roboto", sans-serif;
     margin: 0;
     padding: 0;
+    color: white;
 }
 .space{
     height: 20px;
@@ -118,8 +119,6 @@ footer{
     flex-direction: column;
     width: 100%;
     height: 100%;
-
-
 }
 .login_signup_title{
     color: #FFFFFF;
@@ -246,20 +245,20 @@ footer{
 .stats_search_form{
     align-items: center;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     margin: 0;
+    width: 100%;
 }
 .stats_search_form form{
     align-items: center;
     display: flex;
     justify-content: center;
+    flex-direction: column;
 }
 .stats_search_bar{
-    display: block;
-    justify-content: center;
-    margin: 0;
-    align-items: center;
     width: 100%;
+    text-align: center;
     margin-left: -10%;
 }
 .stats_search_bar input{
@@ -273,7 +272,9 @@ footer{
 }
 .stats_submit_button{
     display: block;
-    width: 65%;
+    width: 100%;
+    margin-left: -30%;
+
 }
 .stats_submit_button input{
     background-color: #ff3131;
@@ -527,4 +528,119 @@ footer{
     background-color: #ffffff;
     color: #000000;
 }
+
 /* Play page style end */
+/* Setings page style start */
+.settings_subtitles{
+    margin: 0;
+}
+.change_password form{
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+.change_password_bar{
+    width: 30%;
+    text-align: center;
+    margin-left: -1%;
+    margin-bottom: 10px;
+}
+.change_password input{
+    text-align: center;
+    width: 100%;
+    padding: 10px;
+    border-radius: 50px;
+    border: 2px solid #ff3131;
+    font-size: 1.2rem;
+    color: #000000;
+}
+.settings_submit_button input{
+    background-color: #ff3131;
+    color: #FFFFFF;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+}
+.settings_submit_button input:hover{
+    background-color: white;
+    color: black;
+}
+.delete_account_link {
+    justify-content: center;
+    padding: 20px;
+    display: flex;
+    padding: 100px;
+}
+.delete_account_link a {
+    margin-right: 0px;
+    margin-left: 9px;
+    background-color: #ff3131;
+    color:#FFFFFF;
+    padding: 15px 25px;
+    border-radius: 50px;
+    border: 3px solid white;
+    font-weight: bold;
+    text-decoration: none;
+}
+.delete_account_link a:hover{
+    background-color: white;
+    color: black;
+}
+/* Settings page style end */
+/* Delete account stlye start */
+.delete_account_subtitles{
+    margin: 1%;
+}
+.delete_account form{
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+.delete_account_bar{
+    width: 20%;
+    text-align: center;
+    margin-bottom: 10px;
+    margin-left: -1%;
+}
+.delete_account input{
+    text-align: center;
+    width: 100%;
+    padding: 10px;
+    border-radius: 50px;
+    border: 2px solid #ff3131;
+    font-size: 1.2rem;
+    color: #000000;
+}
+.delete_account_checkbox{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 10px;
+}
+.delete_account_checkbox label{
+    margin: 0;
+    padding: 0;
+    display: inline;
+    white-space: nowrap;
+}
+.delete_account_submit_button input{
+    background-color: #ff3131;
+    color: #FFFFFF;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+}
+.delete_account_submit_button input:hover{
+    background-color: white;
+    color: black;
+}
+
+/* Delete account style end */

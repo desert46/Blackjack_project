@@ -3,5 +3,43 @@
 <h1 class="title">
     Settings
 </h1>
-<p>test</p>
+<h2 class="sub_heading">
+    Change password
+</h2>
+<div class="change_password">
+    
+    <form method="post" action="/settings">
+        <h3 class="settings_subtitles">Enter new password:</h3>
+        <div class="change_password_bar">
+            <input type="text" name="new_password" minlength="5" 
+            maxlength="15" placeholder="6~15 characters and contain a number" required>
+        </div>
+        <h3 class="settings_subtitles">Enter your previous password:</h3>
+        <div class="change_password_bar">
+            <input type="text" name="old_password" minlength="5" 
+            maxlength="15" placeholder="Enter your old password" required>
+        </div>
+        <div class="settings_submit_button">
+            <div>
+                <input type="submit" value="Change Password" >
+            </div>
+        </div>
+    </form>
+</div>
+<div class="delete_account_link">
+    <a href="/delete_account">Delete account</a>
+</div>
+<!-- Flashes -->
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class=flashes>
+      {% for message in messages %}
+        <div>
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
 {% endblock %}
