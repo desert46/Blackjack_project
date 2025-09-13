@@ -35,7 +35,6 @@ footer{
     color: #FFFFFF;
     color: #ff3131;
     color: #338800;
-    /* #286907 */
     color: #085e0a;
     color: #000000;
 }
@@ -350,6 +349,7 @@ footer{
     margin: 0 10%;
     gap: 10%;
     margin-top: 35px;
+    padding-bottom: 0;
 }
 .dashboard_play_button {
     display: flex;
@@ -378,6 +378,13 @@ footer{
     text-align: center;
     font-size: 2.5rem;
     margin-bottom: 0;
+}
+.dashboard_money_message{
+    color: #ff3131;
+    padding: 100px;
+    text-align: center;
+    padding-top: 0;
+    margin: 0;
 }
 /* Player Stats and Dashboard Page Style end */
 
@@ -642,5 +649,14 @@ footer{
     background-color: white;
     color: black;
 }
-
 /* Delete account style end */
+/* About page style start */
+.how_to_play{
+    text-align: center;
+
+}
+.instructions{
+    text-align: center;
+
+}
+/* About page style end */
