@@ -2,9 +2,21 @@
 {% block content %}
 
 <div class="error_page_background">
-    <h1 class="error_page_title">404 Page not found</h1>
+    <h1 class="error_page_title">404, Page not found</h1>
     <h2 class="error_page_subtitle">No offence, but you got lost at the wrong table!</h2>
     <h3 class="error_page_link"><a href="/home">Click here to go back home</a></h3>
 </div>
-
+<!-- Flash messages start -->
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class=flashes>
+      {% for message in messages %}
+        <div>
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+<!-- Flash messages end -->
 {% endblock %}

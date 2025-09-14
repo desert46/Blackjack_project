@@ -36,6 +36,7 @@
 </div>
 
 
+<!-- Flash messages start -->
 {% with messages = get_flashed_messages() %}
   {% if messages %}
     <div class=flashes>
@@ -47,4 +48,5 @@
     </div>
   {% endif %}
 {% endwith %}
+<!-- Flash messages end -->
 {% endblock %}

@@ -69,4 +69,18 @@
         <img class="home_image" src="../static/images/home_image_3.png" alt="Blackjack Home Image">
     </div>
 </div>
+
+<!-- Flash messages start -->
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class=flashes>
+      {% for message in messages %}
+        <div>
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+<!-- Flash messages end -->
 {% endblock %}

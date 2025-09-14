@@ -36,6 +36,7 @@
     <a href="/login">Already have an account? Click here to login</a>
 </div>
 
+<!-- Flash messages start -->
 {% with messages = get_flashed_messages() %}
   {% if messages %}
     <div class=flashes>
@@ -47,5 +48,6 @@
     </div>
   {% endif %}
 {% endwith %}
+<!-- Flash messages end -->
 
 {% endblock %}

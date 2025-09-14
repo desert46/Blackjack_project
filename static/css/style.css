@@ -214,8 +214,6 @@ footer{
     color: #000000;
 }
 /* Hero Image Style end */
-
-
 .home_row{
     color: #FFFFFF;
     border-bottom: 5px solid white;
@@ -223,12 +221,6 @@ footer{
     grid-template-columns: 1fr 1fr;
     gap: 10%;
     padding: 2.5% 10%;
-}
-.home_title{
-
-}
-.home_text{
-    
 }
 .home_image{
     width: 80%;
@@ -484,6 +476,12 @@ footer{
     background-color: #ffffff;
     color: #000000;
 }
+.bet_page_how_to{
+    color: white;
+}
+.bet_page_how_to:hover{
+    color: #ff3131;
+}
 /* Betting Page style end */
 
 /* Play Page style start */
@@ -651,9 +649,14 @@ footer{
 }
 /* Delete account style end */
 /* About page style start */
+.about{
+    text-align: center;
+    margin: 0 25%;
+    margin-bottom: 5%;
+}
 .how_to_play{
     text-align: center;
-
+    margin: 0 25%;
 }
 .instructions{
     text-align: center;

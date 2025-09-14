@@ -33,6 +33,7 @@
     </tr>
   </table>
 </div>
+<!-- Flash messages start -->
 {% with messages = get_flashed_messages() %}
   {% if messages %}
     <div class=flashes>
@@ -44,6 +45,7 @@
     </div>
   {% endif %}
 {% endwith %}
+<!-- Flash messages end -->
 
 <div class="action_buttons">
 {% if active_hand %}
@@ -52,7 +54,8 @@
       <a href="/stand">Stand</a>
  
 {% else %}
-  <a href="/play">Exit</a>
+  <a href="/play">Play Again</a>
+  <a href="/home">Home</a>
 {% endif %}
 </div>
 

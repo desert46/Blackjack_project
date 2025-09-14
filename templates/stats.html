@@ -21,15 +21,19 @@
     </form>
   </div>
 </div>
+<!-- Flash messages start -->
 {% with messages = get_flashed_messages() %}
   {% if messages %}
     <div class=flashes>
-    {% for message in messages %}
-      {{ message }}
-    {% endfor %}
+      {% for message in messages %}
+        <div>
+          {{ message }}
+        </div>
+      {% endfor %}
     </div>
   {% endif %}
 {% endwith %}
+<!-- Flash messages end -->
 
 <div class="stats">
   {% if stats_data %}

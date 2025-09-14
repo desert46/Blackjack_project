@@ -4,17 +4,19 @@
     Your Dashboard
 </h1>
 
-<!-- Flashes -->
+<!-- Flash messages start -->
 {% with messages = get_flashed_messages() %}
   {% if messages %}
     <div class=flashes>
-    {% for message in messages %}
-      {{ message }}
-    {% endfor %}
+      {% for message in messages %}
+        <div>
+          {{ message }}
+        </div>
+      {% endfor %}
     </div>
   {% endif %}
 {% endwith %}
-<!-- Flashes end -->
+<!-- Flash messages end -->
 
 <h2 class="sub_heading">Welcome to your dashboard {{username}}!</h2>
 
@@ -153,4 +155,5 @@
 <div>
   <h2 class="dashboard_money_message">Don't lose all of your money. You can't get it back!</h2>
 </div>
+
 {% endblock %}

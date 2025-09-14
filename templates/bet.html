@@ -21,7 +21,11 @@
         </div>
     </div>
 </div>
-<!-- Flashes -->
+
+<div>
+  <a class="bet_page_how_to" href="/about">Don't know how to play? Click here</a>
+</div>
+<!-- Flash messages start -->
 {% with messages = get_flashed_messages() %}
   {% if messages %}
     <div class=flashes>
@@ -33,6 +37,6 @@
     </div>
   {% endif %}
 {% endwith %}
-<!-- Flashes end -->
+<!-- Flash messages end -->
 
 {% endblock %}

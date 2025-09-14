@@ -4,6 +4,7 @@ from flask import Flask, render_template, request, flash, session, redirect
 from flask_session import Session
 import sqlite3
 import random
+import hashlib
 
 # Constants
 DATABASE = "blackjack.db"
@@ -260,7 +261,7 @@ def bet():
     session['bet'] = 0
     user_id = session['user_id']
 
-    # Get the amount of money
+    # Get the amount of money the player has
     with sqlite3.connect(DATABASE) as db:
         cursor = db.cursor()
         sql = "SELECT money FROM Player WHERE id = ?"
@@ -268,15 +269,29 @@ def bet():
         result = cursor.fetchone()
         session['money'] = result[0]
 
-    # If the shoe has less than 100 cards, reshuffle
+    # If the shoe has less than 100 cards, discard shoe and reshuffle new show
     if len(session['shoe']) < 100:
         flash("Shoe has been reshuffled!")
         session['shoe'] = new_deck()
 
     # Form processing
     # This code ensures the bet size is a number 10 or above
+    # The bet must also be <30 digits long
     if request.method == 'POST':
-        session['bet'] = request.form['bet']
+        session['bet'] = request.form.get('bet')
+        if session['bet'] is None:
+            flash('Invalid input, try again')
+            return render_template("bet.html",
+                                   title="Play",
+                                   money=session['money'],
+                                   show_footer=False)
+        if len(session['bet']) > 30:
+            flash('Your bet size was too large, '
+                  'bet size must be below 30 digits long')
+            return render_template("bet.html",
+                                   title="Play",
+                                   money=session['money'],
+                                   show_footer=False)
         if session['bet'].isdecimal():
             session['bet'] = int(session['bet'])
             if session['bet'] > session['money']:
@@ -300,7 +315,7 @@ def bet():
 
         # deducting money from player
         # If the player wins the hand, this will be undone
-        session['money'] -= session['bet']  
+        session['money'] -= session['bet']
         with sqlite3.connect(DATABASE) as db:
             cursor = db.cursor()
             sql = '''UPDATE Player SET money = ? WHERE id = ?'''
@@ -554,6 +569,9 @@ def stats():
 
     if request.method == 'POST':
         searched_username = request.form.get('searched_username')
+        if searched_username is None:
+            flash('Invalid input, try again')
+            return render_template("stats.html", title="Stats")
         db = sqlite3.connect(DATABASE)
         db.row_factory = sqlite3.Row
         cursor = db.cursor()
@@ -611,8 +629,10 @@ def about():
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
-    '''This route is for the login page, which allows users to
-    log in to their accounts.'''
+    '''
+    This route is for the login page, which allows users to
+    log in to their accounts.
+    '''
     if session.get("logged_in"):
         if session.get('active_hand'):
             flash("You need to finish your current hand")
@@ -631,8 +651,17 @@ def login():
             flash("Your Username or Password is incorrect")
             return render_template("login.html",
                                    title="Login")
-        # gets password from the results and compares them
-        if password == results[1]:
+        if password is None:
+            flash('Please try again')
+            return render_template("login.html",
+                                   title="Login")
+        # Hashing the inputted password
+        h = hashlib.new("SHA256")
+        h.update(password.encode())
+        hashed_input_password = h.hexdigest()
+
+        # gets hashed password from the results and compares the hashes
+        if hashed_input_password == results[1]:
             # gets user_id if passwords match
             session['logged_in'] = True
             session['user_id'] = results[0]
@@ -646,6 +675,7 @@ def login():
             flash("Your Username or Password is incorrect")
             return render_template("login.html",
                                    title="Login")
+    flash("Provide a valid login to play blackjack")
     return render_template("login.html",
                            title="Login")
 
@@ -664,8 +694,13 @@ def signup():
         return redirect('/dashboard')
 
     if request.method == 'POST':
-        username = request.form['username'].rstrip()
-        password = request.form['password'].rstrip()
+        username = request.form.get('username').rstrip()
+        password = request.form.get('password').rstrip()
+        if username is None or password is None:
+            flash('Please provide a valid Username and Password')
+            return render_template("signup.html",
+                                   title="Sign Up")
+
         # Checking the username is valid
         # The code below ensures the username is between 4-15 characters
         # Some special characters also cannot be used
@@ -703,10 +738,14 @@ def signup():
             return render_template("signup.html",
                                    title="Sign Up")
 
-        # No duplicate username is found
+        # Hashing the password
+        h = hashlib.new("SHA256")
+        h.update(password.encode())
+        hashed_password = h.hexdigest()
+
         # sql query to create an account
         sql = '''INSERT INTO Player (username, password) VALUES (?, ?)'''
-        cursor.execute(sql, (username, password))
+        cursor.execute(sql, (username, hashed_password))
         # gets the last row id so the player can be awarded
         # it should be the id of the newly created account
         user_id = cursor.lastrowid
@@ -743,8 +782,13 @@ def settings():
                                title="Settings")
 
     if request.method == 'POST':
-        new_password = request.form['new_password']
-        old_password = request.form['old_password']
+        new_password = request.form.get('new_password')
+        old_password = request.form.get('old_password')
+        if new_password is None or old_password is None:
+            flash('Please provide a vaild input')
+            return render_template("settings.html",
+                                   title="Settings")
+
         user_id = session.get('user_id')
         # Password must be 6~15 characters and contain a
         # number/special character
@@ -764,13 +808,23 @@ def settings():
             password = cursor.fetchone()
             password = password[0]
 
+        # Hashing old password to compare the hashes to the current password
+        h = hashlib.new("SHA256")
+        h.update(old_password.encode())
+        old_hashed_password = h.hexdigest()
+
         # checking that the passwords match
-        if old_password != password:
+        if old_hashed_password != password:
             flash('Incorrect password')
         else:
-            # Updating password
+            # Hashing the new password
+            h = hashlib.new("SHA256")
+            h.update(new_password.encode())
+            new_hashed_password = h.hexdigest()
+
+            # Updating password with new hased password
             sql = '''UPDATE Player SET password = ? WHERE id = ?'''
-            cursor.execute(sql, (new_password, user_id,))
+            cursor.execute(sql, (new_hashed_password, user_id,))
             db.commit()
             flash('Password updated successfully')
     return render_template("settings.html",
@@ -801,12 +855,21 @@ def delete_account():
             cursor.execute(sql, (user_id,))
             password = cursor.fetchone()
             password = password[0]
-            input_password = request.form['password']
+            input_password = request.form.get('password')
             checkbox = request.form.get('delete_account_checkbox')
-
+            if input_password is None:
+                flash('Please input your password and check the box provided')
+                return render_template('delete_account.html',
+                                       title='Delete Account',)
+            # Hashing the input password
+            # We do this so we can compare the hashes of the old password
+            # Hashing the password
+            h = hashlib.new("SHA256")
+            h.update(input_password.encode())
+            hashed_input_password = h.hexdigest()
             if checkbox == 'Checked':  # Box must be checked to change password
                 # checking that the passwords match
-                if input_password == password:
+                if hashed_input_password == password:
                     # If passwords match, all records of the player are deleted
                     sql = '''DELETE FROM Player WHERE id = ?'''
                     cursor.execute(sql, (user_id,))
@@ -814,6 +877,7 @@ def delete_account():
                     cursor.execute(sql, (user_id,))
                     session.clear()
                     db.commit()
+                    print("Account deleted successfully")
                     return redirect('/home')
                 else:
                     flash('Password is incorrect')
@@ -821,8 +885,7 @@ def delete_account():
                 flash('Please check the box to delete your account')
 
     return render_template('delete_account.html',
-                           title='Delete Account',
-                           show_footer=False)
+                           title='Delete Account',)
 
 
 @app.route('/log_out')
@@ -852,7 +915,7 @@ def page_not_found(e):
 @app.errorhandler(500)
 def error_500(e):
     '''Custom error 500 page'''
-    render_template("500.html", title="Error 500"), 500
+    return render_template("500.html", title="Error 500"), 500
 
 
 if __name__ == "__main__":

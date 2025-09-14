@@ -29,7 +29,7 @@
 <div class="delete_account_link">
     <a href="/delete_account">Delete account</a>
 </div>
-<!-- Flashes -->
+<!-- Flash messages start -->
 {% with messages = get_flashed_messages() %}
   {% if messages %}
     <div class=flashes>
@@ -41,5 +41,6 @@
     </div>
   {% endif %}
 {% endwith %}
+<!-- Flash messages end -->
 
 {% endblock %}
