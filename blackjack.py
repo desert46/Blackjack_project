@@ -132,7 +132,7 @@ def dashboard():
     else:
         hands_win_loss_ratio = stats_data['wins']/(stats_data['wins']+stats_data['losses'])
     # Money/loss ratio calculations
-    if stats_data['money_wins'] == 0:
+    if stats_data['money_losses'] == 0:
         # Preventing division by zero
         money_loss_ratio = 0
     else:
@@ -146,8 +146,8 @@ def dashboard():
         username=username,
         stats_data=stats_data,
         awards=awards,
-        hands_win_loss_ratio=round(hands_win_loss_ratio, 1)*100,
-        money_loss_ratio=round(money_loss_ratio, 1)*100)
+        hands_win_loss_ratio=round(hands_win_loss_ratio, 2)*100,
+        money_loss_ratio=round(money_loss_ratio, 2)*100)
 
 
 def calculate_hand_value(card_values, hand_values, hand):
@@ -596,7 +596,7 @@ def stats():
             else:
                 hands_win_loss_ratio = stats_data['wins']/(stats_data['wins']+stats_data['losses'])
             # Money/loss ratio calculations
-            if stats_data['money_wins'] == 0:
+            if stats_data['money_losses'] == 0:
                 # Preventing division by zero
                 money_loss_ratio = 0
             else:
@@ -607,8 +607,8 @@ def stats():
                                    title="Stats",
                                    stats_data=stats_data,
                                    awards=awards,
-                                   hands_win_loss_ratio=round(hands_win_loss_ratio, 1)*100,
-                                   money_loss_ratio=round(money_loss_ratio, 1)*100,
+                                   hands_win_loss_ratio=round(hands_win_loss_ratio, 2)*100,
+                                   money_loss_ratio=round(money_loss_ratio, 2)*100,
                                    )
     return render_template("stats.html", title="Stats")
 
@@ -655,10 +655,11 @@ def login():
             flash('Please try again')
             return render_template("login.html",
                                    title="Login")
+
         # Hashing the inputted password
-        h = hashlib.new("SHA256")
-        h.update(password.encode())
-        hashed_input_password = h.hexdigest()
+        h = hashlib.new("SHA256")  # create hash object using SHA256 algorithm
+        h.update(password.encode())  # turns password into bytes
+        hashed_input_password = h.hexdigest()  # converts into hexadecimal str
 
         # gets hashed password from the results and compares the hashes
         if hashed_input_password == results[1]:

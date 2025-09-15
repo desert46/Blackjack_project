@@ -42,7 +42,6 @@ footer{
     text-align: center;
     color: #FFFFFF;
 }
-
 /* Navigation bar style start */
 .navigation_bar{
     background-color: #338800;
@@ -652,14 +651,24 @@ footer{
 .about{
     text-align: center;
     margin: 0 25%;
-    margin-bottom: 5%;
+    margin-bottom: 2%;
 }
 .how_to_play{
     text-align: center;
     margin: 0 25%;
+    align-items: center;
 }
-.instructions{
-    text-align: center;
+.how_to_play_video{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin: 20px auto;
+}
+.how_to_play_video iframe{
+    width: 80%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+}
 
-}
 /* About page style end */
