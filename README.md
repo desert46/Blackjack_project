@@ -1,0 +1,1 @@
+This site is created by Alex Yao. On this site you can play blackjack using our very own blackjack engine. Statistics are collected upon every action so players can analyse their descisions and imporve their skills. Our site offers awards for hitting milestones and a rewarding experience for our players.
