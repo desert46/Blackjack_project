@@ -11,6 +11,19 @@
     <div class="signup_hero_button">
             <a href="signup">Signup</a>
     </div>
+    <!-- Flash messages start -->
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <div class=flashes>
+        {% for message in messages %}
+            <div>
+            {{ message }}
+            </div>
+        {% endfor %}
+        </div>
+    {% endif %}
+    {% endwith %}
+    <!-- Flash messages end -->
 </div>
 
 <div class="home_row" style="background-color: #085e08;;">

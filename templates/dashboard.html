@@ -22,13 +22,13 @@
 
 <div class="dashboard_play_button">
     <a href="play"> 
-      <span class="play_text" style="text-decoration: underline;">
+      <span class="play_text">
         PLAY
       </span>
-      <div style="font-size: 16px; text-align: center;">
+      <div class="dashboard_money">
         ${{stats_data['money']}} remaining
       </div>
-      <div style="text-align: center; font-size: 16px;">
+      <div class="level_message">
         You are Level {{stats_data['level']}}
       </div>
     </a>
@@ -39,7 +39,7 @@
   {% if stats_data %}
   <table class="player_stats_table">
     <tr>
-      <th class="player_stats_table_title" colspan="2" style="font-size: 1.5rem;">
+      <th class="player_stats_table_title" colspan="2">
         Your Blackjack Statistics
       </th>
     </tr>
@@ -136,7 +136,7 @@
 <!-- Awards table start -->
   <table class="awards_table">
     <tr>
-      <th colspan="3" class="awards_table_title" style="height: fit-content;">
+      <th colspan="3" class="awards_table_title">
         Your awards cabinet
       </th>
 

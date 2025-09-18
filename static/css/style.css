@@ -227,6 +227,21 @@ footer{
 }
 /* Home page Style end */
 
+/* Secret page style start */
+.secret {
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    padding-top: 15%;
+}
+
+.secret img {
+    width: 150px;
+    height: auto;
+    margin: 0 10px;
+}
+/* Secret page style end */
+
 /* Player Stats and Dashboard Page Style start */
 .stats_section {
   display: block;
@@ -289,6 +304,9 @@ footer{
     color: #FFFFFF;
     margin-bottom: 100px;
 }
+.player_stats_table_title{
+    font-size: 1.5rem;
+}
 .player_stats_table th{
     border: 3px solid white;
     text-align: left;
@@ -310,14 +328,14 @@ footer{
     background-color: #338800;
     color: #FFFFFF;
     font-size: 1.5rem;
-    padding: 2%;
+    height: fit-content;
 }
 .awards_table th{
     border: 3px solid white;
     height: 50px;
     width: 25%;
     text-align: left;
-    padding: 2%;
+    padding-left: 2%;
 }
 .awards_table td{
     border: 3px solid white;
@@ -369,6 +387,17 @@ footer{
     text-align: center;
     font-size: 2.5rem;
     margin-bottom: 0;
+}
+.dashboard_money{
+    font-size: 16px;
+    text-align: center;
+}
+.play_text{
+    text-decoration: underline;
+}
+.level_message{
+    text-align: center;
+    font-size: 16px;
 }
 .dashboard_money_message{
     color: #ff3131;
@@ -496,9 +525,12 @@ footer{
     align-items: center;
     align-content: center;
     justify-content: center;
+    flex-direction: column;
     display: flex;
+
 }
 .hand_headings{
+    margin-top: 10px;
     color: white;
     font-weight: bold;
     text-align: center;
@@ -507,6 +539,7 @@ footer{
     display: flex;
     padding: 0;
     height: auto;
+    justify-content: center;
 }
 .card {
     height: 150px;
@@ -670,5 +703,4 @@ footer{
     height: auto;
     aspect-ratio: 16 / 9;
 }
-
 /* About page style end */

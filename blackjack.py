@@ -9,7 +9,7 @@ play blackjack. Awards are also awarded to players during specific
 statistics milestones. Players can create their
 own accounts, change password, and delete accounts when they please.
 
-Project End 17/09/2025 - DD/MM/YYYY
+Project End 18/09/2025 - DD/MM/YYYY
 '''
 # Imports
 from flask import Flask, render_template, request, flash, session, redirect
@@ -49,8 +49,9 @@ def before_request():
         with sqlite3.connect(DATABASE) as db:
             db.row_factory = sqlite3.Row
             cursor = db.cursor()
-            # Initialising variables
             user_id = session.get('user_id')
+            # Fetching player data so data can be used to check if player meets
+            # award criterias, leveling up milestones etc
             sql = '''SELECT * FROM Player WHERE id=?'''
             cursor.execute(sql, (user_id,))
             stats_data = cursor.fetchone()
@@ -137,7 +138,7 @@ def dashboard():
         flash("Please finish your active hand")
         return redirect('/play')
 
-    # initialising some variables
+    # initialising some variables for SQL queries
     user_id = session.get("user_id")
     username = session.get("username")
 
@@ -160,6 +161,7 @@ def dashboard():
         hands_win_loss_ratio = 0
     else:
         hands_win_loss_ratio = stats_data['wins']/(stats_data['wins']+stats_data['losses'])
+
     # Money/loss ratio calculations
     if stats_data['money_losses'] == 0:
         # Preventing division by zero
@@ -187,7 +189,7 @@ def calculate_hand_value(card_values, hand_values, hand):
     hand_values.append(card_values[hand[-1][0]])
     if sum(hand_values) > 21 and 11 in hand_values:
         # If the hand value is over 21 and contains an Ace, Ace becomes 1
-        # takes the first 11 and transforms it
+        # takes the first 11 and transforms it into a 1
         hand_values[hand_values.index(11)] = 1
     return hand_values, hand
 
@@ -222,7 +224,7 @@ def update_stats(stats, increase_stats, increase_xp, multiplier, cursor):
     SQL statement to update stats as the player plays Blackjack.
     This function has 5 parameters.
     The stat parameter specified what stat/s are updated.
-    The increases_stats specifies how much that stat is increased.
+    The increases_stats specifies how much that stat is increased respectively.
     The increase_xp specifies how much xp the player earns
     The multiplier specifies how much money the player earns based off
     the bet size times the multiplier upon a win.
@@ -230,8 +232,13 @@ def update_stats(stats, increase_stats, increase_xp, multiplier, cursor):
     '''
     user_id = session.get('user_id')
     stats = list(stats)
-    # Updating stat(s)
+    # Updating stats
     increase_stats = list(increase_stats)
+    # A list of names of columns in the sql tables is parsed into this function
+    # a list of increase_stats is also parsed in and contains the numbers of
+    # how much each column should be updated respectively
+    # The for loop loops through each stat in the list of stats and updates
+    # them using the respective number in the increase_stats list
     for i in range(len(stats)):
         sql = f'''UPDATE Player SET {stats[i]} = {stats[i]} + ? WHERE id = ?'''
         cursor.execute(sql, (int(increase_stats[i]), user_id))
@@ -266,7 +273,10 @@ def update_stats(stats, increase_stats, increase_xp, multiplier, cursor):
 
 
 def hand_end_template():
-    '''Function for rendering the template after a hand has ended'''
+    '''
+    Function for rendering the template after a hand has ended.
+    This function was created to shorten/simplify some code
+    '''
     session['active_hand'] = False
     return render_template(
                 "play.html",
@@ -292,7 +302,7 @@ def bet():
         flash("Please finish your active hand")
         return redirect('/play')
 
-    # Initialize variables
+    # Initialize variables that are needed when the hand starts
     session['card_values'] = create_card_values()
     session['player_hand_values'] = []
     session['dealer_hand_values'] = []
@@ -300,7 +310,7 @@ def bet():
     session['bet'] = 0
     user_id = session['user_id']
 
-    # Get the amount of money the player has
+    # Get the amount of money the player has and updates the session money
     with sqlite3.connect(DATABASE) as db:
         cursor = db.cursor()
         sql = "SELECT money FROM Player WHERE id = ?"
@@ -361,7 +371,7 @@ def bet():
                                    previous_bet=session.get('previous_bet', ''))
 
         # deducting money from player
-        # If the player wins the hand, this will be undone
+        # If the player wins the hand or a push occurs, this will be undone
         session['money'] -= session['bet']
         with sqlite3.connect(DATABASE) as db:
             cursor = db.cursor()
@@ -397,8 +407,12 @@ def bet():
 
 @app.route('/play')
 def play():
-    '''Route for the game after the bet has been placed. Player must
-    be in a hand and logged in to access this page'''
+    '''
+    Route for the game after the bet has been placed.
+    This is the page that contains the buttons and cards the player
+    interacts with.
+    Player must be in a hand and logged in to access this page
+    '''
     if not session.get('logged_in'):
         return render_template("not_logged_in.html",
                                title="Play")
@@ -430,7 +444,7 @@ def hand_start(bet, shoe, card_values):
     This function returns the player and dealer hands with two random cards.
     Initial hand values for the two card are also calculated and returned.
     '''
-    # Initialising variables
+    # Initialising variables needed for the hand
     natural = False
     player_hand = []
     dealers_hidden_hand = []
@@ -438,7 +452,7 @@ def hand_start(bet, shoe, card_values):
     player_hand_values = []
     dealer_hand_values = []
 
-    # Deal two cards to the player and dealer
+    # Deal two cards to the player and dealer from the show
     for i in range(2):
         player_hand.append(shoe[0])
         shoe.pop(0)
@@ -476,12 +490,20 @@ def hand_start(bet, shoe, card_values):
                 flash("Both you and the dealer hit a natural")
                 flash("You get your bet back.")
                 # record a push, give push XP (3), multiplier 1 returns the bet
-                update_stats(stats=['pushes'], increase_stats=[1,], increase_xp=3, multiplier=1, cursor=cur)
+                update_stats(stats=['pushes'],
+                             increase_stats=[1,],
+                             increase_xp=3,
+                             multiplier=1,
+                             cursor=cur)
             else:
                 print('Only player hit a natural')
                 flash('You hit a natural')
                 flash(f'You win ${bet*2.5}')
-                update_stats(stats=['wins', 'player_higher'], increase_stats=[1, 1], increase_xp=8, multiplier=2.5, cursor=cur)
+                update_stats(stats=['wins', 'player_higher'],
+                             increase_stats=[1, 1],
+                             increase_xp=8,
+                             multiplier=2.5,
+                             cursor=cur)
 
         elif sum(dealer_hand_values) == 21:
             # only dealer hit a natural
@@ -489,7 +511,11 @@ def hand_start(bet, shoe, card_values):
             natural = True
             flash("Dealer hit a natural!")
             flash(f"You lost your bet of ${bet}.")
-            update_stats(stats=['losses', 'dealer_higher'], increase_stats=[1, 1], increase_xp=1, multiplier=0, cursor=cur)
+            update_stats(stats=['losses', 'dealer_higher'],
+                         increase_stats=[1, 1],
+                         increase_xp=1,
+                         multiplier=0,
+                         cursor=cur)
     db.commit()
     return (
         player_hand,
@@ -497,8 +523,7 @@ def hand_start(bet, shoe, card_values):
         dealers_shown_hand,
         player_hand_values,
         dealer_hand_values,
-        natural
-        )
+        natural)
 
 
 @app.route('/hit')
@@ -516,7 +541,11 @@ def hit():
                                title="Play")
     with sqlite3.connect(DATABASE) as db:
         cursor = db.cursor()
-        update_stats(['hits',], [1,], 2, 0, cursor)
+        update_stats(stats=['hits',],
+                     increase_stats=[1,],
+                     increase_xp=2,
+                     multiplier=0,
+                     cursor=cursor)
 
     # Deal one card from the shoe
     session['player_hand'].append(session['shoe'][0])
@@ -537,7 +566,11 @@ def hit():
         flash(f"You lost your bet of ${session['bet']}")
         with sqlite3.connect(DATABASE) as db:
             cursor = db.cursor()
-            update_stats(['busts', 'losses'], [1, 1], 1, 0, cursor)
+            update_stats(stats=['busts', 'losses'],
+                         increase_stats=[1, 1],
+                         increase_xp=1,
+                         multiplier=0,
+                         cursor=cursor)
         return hand_end_template()
     return redirect('/play')
 
@@ -579,7 +612,11 @@ def stand():
         flash(f"You won ${session['bet'] * 2}!")
         with sqlite3.connect(DATABASE) as db:
             cursor = db.cursor()
-            update_stats(['dealer_busts', 'wins'], [1, 1], 5, 2, cursor)
+            update_stats(stats=['dealer_busts', 'wins'],
+                         increase_stats=[1, 1],
+                         increase_xp=5,
+                         multiplier=2,
+                         cursor=cursor)
             db.commit()
         return hand_end_template()
 
@@ -589,7 +626,11 @@ def stand():
         flash(f"You lost your bet of ${session['bet']}")
         with sqlite3.connect(DATABASE) as db:
             cursor = db.cursor()
-            update_stats(['dealer_higher', 'losses'], [1, 1], 1, 0, cursor)
+            update_stats(stats=['dealer_higher', 'losses'],
+                         increase_stats=[1, 1],
+                         increase_xp=1,
+                         multiplier=0,
+                         cursor=cursor)
             db.commit()
         return hand_end_template()
 
@@ -599,7 +640,11 @@ def stand():
         flash(f"You won ${session['bet'] * 2}!")
         with sqlite3.connect(DATABASE) as db:
             cursor = db.cursor()
-            update_stats(['player_higher', 'wins'], [1, 1], 5, 2, cursor)
+            update_stats(stats=['player_higher', 'wins'],
+                         increase_stats=[1, 1],
+                         increase_xp=5,
+                         multiplier=2,
+                         cursor=cursor)
             db.commit()
         return hand_end_template()
 
@@ -610,7 +655,11 @@ def stand():
         flash(f"You get your bet of ${session['bet']} back.")
         with sqlite3.connect(DATABASE) as db:
             cursor = db.cursor()
-            update_stats(['pushes',], ['1',], 3, 1, cursor)
+            update_stats(stats=['pushes',],
+                         increase_stats=['1',],
+                         increase_xp=3,
+                         multiplier=1,
+                         cursor=cursor)
             db.commit()
         return hand_end_template()
 # Blackjack engine routes and functions end
@@ -693,11 +742,13 @@ def login():
     This route is for the login page, which allows users to
     log in to their accounts.
     '''
+    # User needs to be logged in and not in a hand to access this page
     if session.get("logged_in"):
         if session.get('active_hand'):
             flash("You need to finish your current hand")
             return redirect('/play')
         return redirect('/dashboard')
+
     username = request.form.get('username')
     password = request.form.get('password')
     if username is not None:
@@ -707,8 +758,10 @@ def login():
         cursor.execute(sql, (username,))
         results = cursor.fetchone()
         db.close()
+
+        # Preventing an error is no input is entered
         if results is None:
-            flash("Your Username or Password is incorrect")
+            flash("Username or Password is incorrect")
             return render_template("login.html",
                                    title="Login")
         if password is None:
@@ -724,6 +777,8 @@ def login():
         # gets hashed password from the results and compares the hashes
         if hashed_input_password == results[1]:
             # gets user_id if passwords match
+
+            # Initialising variables needed for the game upon login
             session['logged_in'] = True
             session['user_id'] = results[0]
             session['username'] = username
@@ -736,7 +791,7 @@ def login():
             flash("Your Username or Password is incorrect")
             return render_template("login.html",
                                    title="Login")
-    flash("Provide a valid login to play blackjack")
+    flash("Login to play Blackjack")
     return render_template("login.html",
                            title="Login")
 
@@ -748,12 +803,14 @@ def signup():
     create a new account.
     The user needs to be logged out to access this page.
     '''
+    # User needs to be logged in and not in a hand to access this page
     if session.get("logged_in"):
         if session.get('active_hand'):
             flash("You need to finish your current hand")
             return redirect('/play')
         return redirect('/dashboard')
 
+    # Preventing an error is no input is entered
     if request.method == 'POST':
         username = request.form.get('username').rstrip()
         password = request.form.get('password').rstrip()
@@ -814,6 +871,7 @@ def signup():
         # Also updates award_count of player
         sql = '''INSERT INTO PlayerAward (pid, aid) VALUES (?, ?)'''
         cursor.execute(sql, (user_id, 1))
+        # Updating award count stat
         sql = '''UPDATE Player SET award_count = award_count + 1
                 WHERE id = ?;'''
         cursor.execute(sql, (user_id,))
@@ -842,6 +900,7 @@ def settings():
         return render_template("not_logged_in.html",
                                title="Settings")
 
+    # Preventing an error if no input is entered
     if request.method == 'POST':
         new_password = request.form.get('new_password')
         old_password = request.form.get('old_password')
@@ -874,7 +933,7 @@ def settings():
         h.update(old_password.encode())
         old_hashed_password = h.hexdigest()
 
-        # checking that the passwords match
+        # checking that the hashed passwords match
         if old_hashed_password != password:
             flash('Incorrect password')
         else:
@@ -900,6 +959,7 @@ def delete_account():
     checking a box. User needs to be logged in and not in a hand to access
     this page
     '''
+    # User must be logged in and not in a hand to access this page
     if session.get("logged_in"):
         if session.get('active_hand'):
             flash("You need to finish your current hand")
@@ -912,6 +972,7 @@ def delete_account():
         with sqlite3.connect(DATABASE) as db:
             user_id = session.get('user_id')
             cursor = db.cursor()
+            # Fetching password to compare to entered password
             sql = '''SELECT password FROM Player WHERE id = ?'''
             cursor.execute(sql, (user_id,))
             password = cursor.fetchone()
@@ -934,12 +995,14 @@ def delete_account():
                     # If passwords match, all records of the player are deleted
                     sql = '''DELETE FROM Player WHERE id = ?'''
                     cursor.execute(sql, (user_id,))
+                    # Deleting player awards
                     sql = '''DELETE FROM PlayerAward WHERE pid = ?'''
                     cursor.execute(sql, (user_id,))
                     session.clear()
                     db.commit()
                     print("Account deleted successfully")
-                    return redirect('/home')
+                    flash('Account deleted successfully')
+                    return redirect('/login')
                 else:
                     flash('Password is incorrect')
             else:
@@ -947,6 +1010,20 @@ def delete_account():
 
     return render_template('delete_account.html',
                            title='Delete Account',)
+
+
+@app.route('/secret')
+def secret():
+    '''
+    Nothing to see here.
+    Easter egg inside my website
+    '''
+    user_id = session.get('user_id')
+    if user_id == 1:  # user must be me to see this page
+        return render_template('secret.html',
+                               title='Secret')
+    else:
+        return redirect('/home')
 
 
 @app.route('/log_out')
@@ -978,4 +1055,5 @@ def error_500(e):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)  # make this turned to off when you submit
+    app.run(debug=False)
+# AA

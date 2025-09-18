@@ -6,32 +6,38 @@
 
 
 <div class="blackjack_table">
-  <table class="hands">
+  <div class="hands">
 
-    <tr class="dealers_hand">
-      <tr class="hand_headings">
-        <td>Dealers Hand</td>
-      </tr>
-          <td class="cards">
-            {% for card in dealers_hand %}
-            <img class="card" src="{{ url_for('static', filename='images/cards/' ~ card ~ '.png') }}" alt="{{card}}">
-            {% endfor %}
-          </td>
-    </tr>
-  </table>
+    
+      <div class="hand_headings">
+        <div>Dealers Hand</div>
+      </div>
 
-  <table>
-    <tr class="hand_headings">
-      <td>Your hand ({{player_hand_values}})</td>
-    </tr>
-    <tr class="players_hand">
-          <td class="cards">
+    <div class="dealers_hand">
+      <div class="cards">
+        {% for card in dealers_hand %}
+        <img class="card" src="{{ url_for('static', filename='images/cards/' ~ card ~ '.png') }}" alt="{{card}}">
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+
+  <div class="hands">
+
+    <div class="hand_headings">
+      <div>Your hand ({{player_hand_values}})</div>
+    </div>
+    <div class="players_hand">
+          <div class="cards">
             {% for card in player_hand %}
             <img class="card" src="{{ url_for('static', filename='images/cards/' ~ card ~ '.png') }}" alt="{{card}}">
             {% endfor %}
-          </td>
-    </tr>
-  </table>
+          </div>
+    </div>
+
+  </div>
+
 </div>
 <!-- Flash messages start -->
 {% with messages = get_flashed_messages() %}
